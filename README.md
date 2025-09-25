@@ -1,14 +1,33 @@
-# CRM LangChain Platform
+# Intelligence CRM Platform
 
-A comprehensive microservices-based CRM platform built with LangChain, FastAPI, and modern cloud-native technologies.
+A comprehensive microservices-based CRM platform built with LangChain, FastAPI, Next.js, and modern cloud-native technologies.
 
-## 🏗️ Architecture Overview
+## � Platform Components
 
-This platform consists of several microservices that work together to provide a complete CRM solution:
+- **🌐 Modern TypeScript Frontend** - Next.js 14 web application with beautiful UI
+- **⚡ High-Performance Backend** - FastAPI microservices architecture
+- **🤖 AI-Powered Intelligence** - LangChain integration for smart automation
+- **📊 Real-time Analytics** - Comprehensive metrics and reporting
+- **🔄 Workflow Automation** - Visual workflow designer and execution engine
 
-### Services
+## �🏗️ Architecture Overview
 
-1. **CRM Core Service** (Port 8000)
+This platform consists of a modern frontend and multiple backend microservices that work together to provide a complete CRM solution:
+
+### Frontend Application
+
+**🌐 Intelligence CRM Frontend** (Port 3000)
+- Next.js 14 with TypeScript
+- Modern responsive UI with Tailwind CSS  
+- Real-time dashboard with metrics
+- Contact management interface
+- User authentication and authorization
+- Analytics and reporting views
+- Workflow management interface
+
+### Backend Services
+
+1. **CRM Core Service** (Port 8001)
    - Core CRM functionality
    - Customer data management
    - Contact management
@@ -20,7 +39,7 @@ This platform consists of several microservices that work together to provide a 
    - Role-based access control
    - JWT token management
 
-3. **Workflow Engine Service** (Port 8001)
+3. **Workflow Engine Service** (Port 8003)
    - Business process automation
    - LangChain workflow orchestration
    - Decision trees and state management
@@ -32,19 +51,27 @@ This platform consists of several microservices that work together to provide a 
    - WebSocket real-time communication
    - Google Cloud integration (PubSub, Translation, Speech)
 
-5. **Analytics Service** (Port 8004)
+5. **Analytics Service** (Port 8000)
    - Real-time analytics and metrics
    - Message and conversation analytics
    - Dashboard KPIs
    - Performance monitoring
 
-6. **AI Orchestration Service**
+6. **AI Orchestration Service** (Port 8004)
    - LangChain agent coordination
    - Multi-agent workflows
    - Prompt management
    - Memory and context management
 
 ## 🚀 Technology Stack
+
+### Frontend Technologies
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type-safe JavaScript
+- **Tailwind CSS** - Utility-first CSS framework
+- **React Query** - Server state management
+- **Framer Motion** - Animation library
+- **Heroicons** - Beautiful SVG icons
 
 ### Backend Technologies
 - **Python 3.11** - Main programming language
@@ -93,8 +120,8 @@ This platform consists of several microservices that work together to provide a 
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/crm-langchain-platform.git
-   cd crm-langchain-platform
+   git clone https://github.com/danhngo/intelligence-crm.git
+   cd intelligence-crm
    ```
 
 2. **Set up environment variables**:
@@ -118,11 +145,20 @@ This platform consists of several microservices that work together to provide a 
    cd services/analytics-service && docker-compose up -d
    ```
 
-4. **Access the services**:
-   - CRM Core API: http://localhost:8000/docs
+4. **Start the frontend**:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+5. **Access the platform**:
+   - **🌐 Frontend Application**: http://localhost:3000
+   - Analytics API: http://localhost:8000/docs
+   - CRM Core API: http://localhost:8001/docs  
    - User Management API: http://localhost:8002/docs
-   - Workflow Engine API: http://localhost:8001/docs
-   - Analytics API: http://localhost:8004/docs
+   - Workflow Engine API: http://localhost:8003/docs
+   - AI Orchestration API: http://localhost:8004/docs
 
 ## 🏛️ Service Architecture
 
