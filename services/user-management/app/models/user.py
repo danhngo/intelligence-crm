@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, String, Table
+from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, String, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin, UUIDMixin
@@ -85,13 +85,15 @@ class Permission(Base, UUIDMixin, TimestampMixin):
 user_roles = Table(
     "user_roles",
     Base.metadata,
-    mapped_column(
+    Column(
         "user_id",
+        String(36),
         ForeignKey("users.id", ondelete="CASCADE"),
         primary_key=True
     ),
-    mapped_column(
+    Column(
         "role_id",
+        String(36),
         ForeignKey("roles.id", ondelete="CASCADE"),
         primary_key=True
     )
@@ -100,13 +102,15 @@ user_roles = Table(
 role_permissions = Table(
     "role_permissions",
     Base.metadata,
-    mapped_column(
+    Column(
         "role_id",
+        String(36),
         ForeignKey("roles.id", ondelete="CASCADE"),
         primary_key=True
     ),
-    mapped_column(
+    Column(
         "permission_id",
+        String(36),
         ForeignKey("permissions.id", ondelete="CASCADE"),
         primary_key=True
     )

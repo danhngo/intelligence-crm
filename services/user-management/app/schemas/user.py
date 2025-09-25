@@ -3,8 +3,9 @@
 import uuid
 from datetime import datetime
 from typing import List, Optional
+from typing_extensions import Annotated
 
-from pydantic import BaseModel, EmailStr, constr
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
 
 # User schemas
@@ -12,29 +13,31 @@ class UserBase(BaseModel):
     """Base user schema."""
     
     email: EmailStr
-    first_name: constr(min_length=1, max_length=100)
-    last_name: constr(min_length=1, max_length=100)
+    first_name: Annotated[str, Field(min_length=1, max_length=100)]
+    last_name: Annotated[str, Field(min_length=1, max_length=100)]
     is_active: bool = True
 
 
 class UserCreate(UserBase):
     """Schema for creating a user."""
     
-    password: constr(min_length=8)
+    password: Annotated[str, Field(min_length=8)]
 
 
 class UserUpdate(BaseModel):
     """Schema for updating a user."""
     
     email: Optional[EmailStr] = None
-    first_name: Optional[constr(min_length=1, max_length=100)] = None
-    last_name: Optional[constr(min_length=1, max_length=100)] = None
-    password: Optional[constr(min_length=8)] = None
+    first_name: Optional[Annotated[str, Field(min_length=1, max_length=100)]] = None
+    last_name: Optional[Annotated[str, Field(min_length=1, max_length=100)]] = None
+    password: Optional[Annotated[str, Field(min_length=8)]] = None
     is_active: Optional[bool] = None
 
 
 class UserInDB(UserBase):
     """Schema for user in database."""
+    
+    model_config = ConfigDict(from_attributes=True)
     
     id: uuid.UUID
     is_superuser: bool
@@ -42,10 +45,6 @@ class UserInDB(UserBase):
     last_login: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        """Pydantic config."""
-        from_attributes = True
 
 
 class User(UserInDB):
@@ -58,7 +57,7 @@ class User(UserInDB):
 class RoleBase(BaseModel):
     """Base role schema."""
     
-    name: constr(min_length=1, max_length=100)
+    name: Annotated[str, Field(min_length=1, max_length=100)]
     description: Optional[str] = None
 
 
@@ -71,7 +70,7 @@ class RoleCreate(RoleBase):
 class RoleUpdate(BaseModel):
     """Schema for updating a role."""
     
-    name: Optional[constr(min_length=1, max_length=100)] = None
+    name: Optional[Annotated[str, Field(min_length=1, max_length=100)]] = None
     description: Optional[str] = None
     permissions: Optional[List[uuid.UUID]] = None
 
@@ -79,13 +78,11 @@ class RoleUpdate(BaseModel):
 class RoleInDB(RoleBase):
     """Schema for role in database."""
     
+    model_config = ConfigDict(from_attributes=True)
+    
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        """Pydantic config."""
-        from_attributes = True
 
 
 class Role(RoleInDB):
@@ -98,7 +95,7 @@ class Role(RoleInDB):
 class PermissionBase(BaseModel):
     """Base permission schema."""
     
-    name: constr(min_length=1, max_length=100)
+    name: Annotated[str, Field(min_length=1, max_length=100)]
     description: Optional[str] = None
 
 
@@ -110,20 +107,18 @@ class PermissionCreate(PermissionBase):
 class PermissionUpdate(BaseModel):
     """Schema for updating a permission."""
     
-    name: Optional[constr(min_length=1, max_length=100)] = None
+    name: Optional[Annotated[str, Field(min_length=1, max_length=100)]] = None
     description: Optional[str] = None
 
 
 class Permission(PermissionBase):
     """Schema for permission response."""
     
+    model_config = ConfigDict(from_attributes=True)
+    
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        """Pydantic config."""
-        from_attributes = True
 
 
 # Auth schemas

@@ -55,11 +55,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const response: AuthResponse = await apiClient.login({ email, password })
       
       localStorage.setItem('access_token', response.access_token)
-      setUser(response.user)
+      localStorage.setItem('refresh_token', response.refresh_token)
+      
+      // Fetch current user after successful login
+      const currentUser = await apiClient.getCurrentUser()
+      setUser(currentUser)
       
       toast.success('Welcome back!')
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Login failed')
+      toast.error(error.response?.data?.detail || error.response?.data?.message || 'Login failed')
       throw error
     } finally {
       setIsLoading(false)
@@ -68,6 +72,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = () => {
     localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
     setUser(null)
     toast.success('Logged out successfully')
   }

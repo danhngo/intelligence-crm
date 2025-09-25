@@ -1,0 +1,358 @@
+version: '3.8'
+
+services:
+  # Frontend Service
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: crm-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+      - NEXT_PUBLIC_CRM_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_USER_API_URL=http://localhost:8002
+      - NEXT_PUBLIC_WORKFLOW_API_URL=http://localhost:8001
+      - NEXT_PUBLIC_AI_API_URL=http://localhost:8004
+      - NEXT_PUBLIC_ANALYTICS_API_URL=http://localhost:8004
+    depends_on:
+      - crm-core
+      - user-management
+      - analytics-service
+    networks:
+      - crm-network
+    restart: unless-stopped
+
+  # CRM Core Service (Main API)
+  crm-core:
+    build: 
+      context: ./services/crm-core
+      dockerfile: Dockerfile
+    container_name: crm-core-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@crm-db:5432/crm_core
+      - REDIS_URL=redis://crm-redis:6379/0
+      - SECRET_KEY=${SECRET_KEY:-crm-secret-key}
+    depends_on:
+      crm-db:
+        condition: service_healthy
+      crm-redis:
+        condition: service_healthy
+    networks:
+      - crm-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Workflow Engine Service
+  workflow-engine:
+    build: 
+      context: ./services/workflow-engine
+      dockerfile: Dockerfile
+    container_name: workflow-engine-api
+    ports:
+      - "8001:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@crm-db:5432/workflow_engine
+      - REDIS_URL=redis://crm-redis:6379/1
+      - SECRET_KEY=${SECRET_KEY:-workflow-secret-key}
+    depends_on:
+      crm-db:
+        condition: service_healthy
+      crm-redis:
+        condition: service_healthy
+    networks:
+      - crm-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # User Management Service
+  user-management:
+    build: 
+      context: ./services/user-management
+      dockerfile: Dockerfile
+    container_name: user-management-api
+    ports:
+      - "8002:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@user-db:5432/user_management
+      - REDIS_URL=redis://user-redis:6379/0
+      - SECRET_KEY=${SECRET_KEY:-user-secret-key}
+    depends_on:
+      user-db:
+        condition: service_healthy
+      user-redis:
+        condition: service_healthy
+    networks:
+      - crm-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Communication Hub Service
+  communication-hub:
+    build: 
+      context: ./services/communication-hub
+      dockerfile: Dockerfile
+    container_name: communication-hub-api
+    ports:
+      - "8003:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@crm-db:5432/communication_hub
+      - REDIS_URL=redis://crm-redis:6379/2
+      - SECRET_KEY=${SECRET_KEY:-communication-secret-key}
+    depends_on:
+      crm-db:
+        condition: service_healthy
+      crm-redis:
+        condition: service_healthy
+    networks:
+      - crm-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Analytics Service
+  analytics-service:
+    build: 
+      context: ./services/analytics-service
+      dockerfile: Dockerfile
+    container_name: analytics-service-api
+    ports:
+      - "8004:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@analytics-db:5432/analytics
+      - REDIS_URL=redis://analytics-redis:6379/0
+      - SECRET_KEY=${SECRET_KEY:-analytics-secret-key}
+    depends_on:
+      analytics-db:
+        condition: service_healthy
+      analytics-redis:
+        condition: service_healthy
+    networks:
+      - crm-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # AI Orchestration Service
+  ai-orchestration:
+    build: 
+      context: ./services/ai-orchestration
+      dockerfile: Dockerfile
+    container_name: ai-orchestration-api
+    ports:
+      - "8005:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@ai-db:5432/ai_orchestration
+      - REDIS_URL=redis://ai-redis:6379/0
+      - SECRET_KEY=${SECRET_KEY:-ai-secret-key}
+      - LANGCHAIN_API_KEY=${LANGCHAIN_API_KEY}
+      - MODEL_NAME=${MODEL_NAME:-gpt-4}
+    depends_on:
+      ai-db:
+        condition: service_healthy
+      ai-redis:
+        condition: service_healthy
+    networks:
+      - crm-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Database Services
+  crm-db:
+    image: postgres:15-alpine
+    container_name: crm-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_MULTIPLE_DATABASES=crm_core,workflow_engine,communication_hub
+    ports:
+      - "5432:5432"
+    volumes:
+      - crm_data:/var/lib/postgresql/data
+      - ./services/crm-core/init-multiple-databases.sh:/docker-entrypoint-initdb.d/init-multiple-databases.sh
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - crm-network
+    restart: unless-stopped
+
+  user-db:
+    image: postgres:15-alpine
+    container_name: user-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=user_management
+    ports:
+      - "5434:5432"
+    volumes:
+      - user_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - crm-network
+    restart: unless-stopped
+
+  analytics-db:
+    image: postgres:15-alpine
+    container_name: analytics-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=analytics
+    ports:
+      - "5435:5432"
+    volumes:
+      - analytics_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - crm-network
+    restart: unless-stopped
+
+  ai-db:
+    image: postgres:15-alpine
+    container_name: ai-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ai_orchestration
+    ports:
+      - "5436:5432"
+    volumes:
+      - ai_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - crm-network
+    restart: unless-stopped
+
+  # Redis Services
+  crm-redis:
+    image: redis:7-alpine
+    container_name: crm-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - crm_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - crm-network
+    restart: unless-stopped
+
+  user-redis:
+    image: redis:7-alpine
+    container_name: user-redis
+    ports:
+      - "6381:6379"
+    volumes:
+      - user_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - crm-network
+    restart: unless-stopped
+
+  analytics-redis:
+    image: redis:7-alpine
+    container_name: analytics-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - analytics_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - crm-network
+    restart: unless-stopped
+
+  ai-redis:
+    image: redis:7-alpine
+    container_name: ai-redis
+    ports:
+      - "6382:6379"
+    volumes:
+      - ai_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - crm-network
+    restart: unless-stopped
+
+volumes:
+  crm_data:
+  user_data:
+  analytics_data:
+  ai_data:
+  crm_redis_data:
+  user_redis_data:
+  analytics_redis_data:
+  ai_redis_data:
+
+networks:
+  crm-network:
+    driver: bridge

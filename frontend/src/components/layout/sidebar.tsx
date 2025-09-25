@@ -8,7 +8,8 @@ import {
   Cog6ToothIcon,
   ChatBubbleLeftRightIcon,
   ArrowRightOnRectangleIcon,
-  UserCircleIcon
+  UserCircleIcon,
+  HeartIcon
 } from '@heroicons/react/24/outline'
 
 const navigation = [
@@ -17,6 +18,7 @@ const navigation = [
   { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
   { name: 'Messages', href: '/messages', icon: ChatBubbleLeftRightIcon },
   { name: 'Workflows', href: '/workflows', icon: Cog6ToothIcon },
+  { name: 'Health', href: '/health', icon: HeartIcon },
 ]
 
 export default function Sidebar() {

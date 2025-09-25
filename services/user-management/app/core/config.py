@@ -3,11 +3,27 @@
 import os
 from typing import List, Union
 
-from pydantic_settings import BaseSettings
+from pydantic import BaseModel
+try:
+    from pydantic_settings import BaseSettings, SettingsConfigDict
+except ImportError:
+    # Fallback for older pydantic versions
+    from pydantic import BaseSettings
+    
+    class SettingsConfigDict:
+        def __init__(self, **kwargs):
+            for k, v in kwargs.items():
+                setattr(self, k, v)
 
 
 class Settings(BaseSettings):
     """Application settings."""
+    
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+        extra="ignore"
+    )
     
     # Application config
     APP_NAME: str = "User Management Service"
@@ -42,11 +58,6 @@ class Settings(BaseSettings):
     # Session settings
     SESSION_COOKIE_NAME: str = "user_session"
     SESSION_EXPIRE_MINUTES: int = 60
-    
-    class Config:
-        """Pydantic config."""
-        env_file = ".env"
-        case_sensitive = True
 
 
 settings = Settings()

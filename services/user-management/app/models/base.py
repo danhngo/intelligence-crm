@@ -42,8 +42,8 @@ class TimestampMixin:
 class UUIDMixin:
     """Mixin for UUID primary key."""
     
-    id: Mapped[uuid.UUID] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
-        default=uuid.uuid4
+        default=lambda: str(uuid.uuid4())
     )

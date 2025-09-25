@@ -2,8 +2,8 @@
 
 from typing import Any, Dict, List, Optional, Union
 import json
-import aioredis
-from aioredis import Redis
+import redis.asyncio as redis
+from redis.asyncio import Redis
 
 from app.core.config import get_settings
 
@@ -18,7 +18,7 @@ class AsyncRedisCache:
     
     async def connect(self):
         """Connect to Redis."""
-        self.redis = await aioredis.from_url(
+        self.redis = await redis.from_url(
             settings.REDIS_URL,
             encoding="utf-8",
             decode_responses=True,

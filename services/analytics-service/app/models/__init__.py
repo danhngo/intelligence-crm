@@ -1,7 +1,6 @@
 """Init file for models package."""
 
 from app.models.analytics import (
-    AnalyticsEvent,
     ChannelAnalytics,
     ConversationAnalytics,
     Event,

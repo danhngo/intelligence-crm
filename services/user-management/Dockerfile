@@ -24,15 +24,11 @@ RUN apt-get update \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Poetry
-RUN curl -sSL https://install.python-poetry.org | python3 -
-ENV PATH="${POETRY_HOME}/bin:${PATH}"
+# Copy requirements file
+COPY requirements.txt ./
 
-# Copy poetry files
-COPY pyproject.toml poetry.lock* ./
-
-# Install Python dependencies
-RUN poetry install --no-interaction --no-ansi --no-root
+# Install Python dependencies using pip directly
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .

@@ -41,7 +41,7 @@ class MessageAnalyticsCreate(BaseModel):
     id: str
     conversation_id: str
     channel_id: str
-    direction: str = Field(..., regex="^(inbound|outbound)$")
+    direction: str = Field(..., pattern="^(inbound|outbound)$")
     content: Dict[str, Any] = Field(default_factory=dict)
     sentiment: Optional[Dict[str, Any]] = None
     intent: Optional[Dict[str, Any]] = None
@@ -109,7 +109,7 @@ class MetricQuery(BaseModel):
     """Schema for metric queries."""
     
     metric_type: Optional[MetricType] = None
-    period: str = Field(default="day", regex="^(hour|day|week|month)$")
+    period: str = Field(default="day", pattern="^(hour|day|week|month)$")
     dimensions: Dict[str, str] = Field(default_factory=dict)
 
 
