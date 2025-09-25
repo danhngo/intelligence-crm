@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(curl:*)",
+      "Bash(npm run dev:*)",
+      "Bash(PORT=3002 npm start)",
+      "Bash(claude-code-spec-workflow get-content:*)",
+      "Bash(claude-code-spec-workflow get-steering-context:*)",
+      "Bash(claude-code-spec-workflow get-template-context:*)",
+      "Bash(claude-code-spec-workflow get-spec-context:*)",
+      "Bash(claude-code-spec-workflow generate-task-commands crm-core-services)",
+      "Bash(claude-code-spec-workflow generate-task-commands ai-ml-orchestration)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

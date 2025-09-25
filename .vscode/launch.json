@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Inventory Service",
+            "request": "launch",
+            "mainClass": "com.preorder.inventory.InventoryApplication",
+            "projectName": "inventory-service",
+            "args": "",
+            "vmArgs": "",
+            "env": {
+                "SPRING_PROFILES_ACTIVE": "dev"
+            },
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "type": "java",
+            "name": "Launch Inventory Service (Debug)",
+            "request": "launch",
+            "mainClass": "com.preorder.inventory.InventoryApplication",
+            "projectName": "inventory-service",
+            "args": "",
+            "vmArgs": "-Dspring.devtools.restart.enabled=true",
+            "env": {
+                "SPRING_PROFILES_ACTIVE": "dev"
+            },
+            "console": "internalConsole",
+            "internalConsoleOptions": "openOnSessionStart"
+        }
+    ]
+}

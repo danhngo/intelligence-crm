@@ -1,0 +1,117 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+version: '3.9'
+
+x-healthcheck-config: &healthcheck-config
+  interval: 10s
+  timeout: 5s
+  retries: 5
+  start_period: 10s
+
+services:
+  crm:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${CRM_PORT:-8000}:8000"
+    volumes:
+      - .:/app
+      - /app/node_modules  # Don't mount node_modules
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck-config
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    restart: unless-stopped
+
+  workflow-engine:
+    build: 
+      context: ../workflow-engine
+      dockerfile: Dockerfile
+    ports:
+      - "${WORKFLOW_PORT:-8001}:8001"
+    volumes:
+      - ../workflow-engine:/app
+      - /app/node_modules  # Don't mount node_modules
+    environment:
+      - DATABASE_URL=${WORKFLOW_DATABASE_URL}
+      - REDIS_URL=${WORKFLOW_REDIS_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck-config
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_MULTIPLE_DATABASES=${POSTGRES_MULTIPLE_DATABASES}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-multiple-databases.sh:/docker-entrypoint-initdb.d/init-multiple-databases.sh
+    healthcheck:
+      <<: *healthcheck-config
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      <<: *healthcheck-config
+      test: ["CMD", "redis-cli", "ping"]
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:

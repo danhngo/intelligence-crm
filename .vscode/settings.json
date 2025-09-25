@@ -1,0 +1,18 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.format.settings.url": "",
+    "java.saveActions.organizeImports": true,
+    "spring-boot.ls.checkUpdate": true,
+    "spring-boot.ls.java.heap-dump.on": "CTRL+SHIFT+CMD+H",
+    "spring-boot.ls.java.live-information.on": true,
+    "spring-boot.ls.java.heap-dump.openWith": "jvisualvm",
+    "files.associations": {
+        "*.yml": "yaml",
+        "*.yaml": "yaml"
+    },
+    "yaml.schemas": {
+        "https://json.schemastore.org/github-workflow.json": ".github/workflows/*.{yml,yaml}",
+        "https://json.schemastore.org/docker-compose.json": "docker-compose*.{yml,yaml}"
+    }
+}
