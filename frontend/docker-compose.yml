@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+      - NEXT_PUBLIC_CRM_API_URL=http://localhost:8001
+      - NEXT_PUBLIC_USER_API_URL=http://localhost:8002
+      - NEXT_PUBLIC_WORKFLOW_API_URL=http://localhost:8003
+      - NEXT_PUBLIC_AI_API_URL=http://localhost:8004
+    depends_on:
+      - analytics-service
+      - crm-service
+      - user-service
+    networks:
+      - crm-network
+
+  # External services (assumes they're running)
+  analytics-service:
+    image: analytics-service:latest
+    external: true
+
+  crm-service:
+    image: crm-service:latest
+    external: true
+
+  user-service:
+    image: user-service:latest
+    external: true
+
+networks:
+  crm-network:
+    external: true
