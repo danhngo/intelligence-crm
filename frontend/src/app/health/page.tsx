@@ -36,9 +36,19 @@ const SERVICES: Omit<ServiceStatus, 'status' | 'lastCheck' | 'responseTime'>[] =
     url: 'http://localhost:8002/health'
   },
   {
+    name: 'Communication Hub API',
+    type: 'api',
+    url: 'http://localhost:8003/health'
+  },
+  {
     name: 'Analytics Service API',
     type: 'api', 
     url: 'http://localhost:8004/health'
+  },
+  {
+    name: 'AI Orchestration API',
+    type: 'api',
+    url: 'http://localhost:8005/health'
   },
   {
     name: 'CRM Core API',
@@ -49,36 +59,6 @@ const SERVICES: Omit<ServiceStatus, 'status' | 'lastCheck' | 'responseTime'>[] =
     name: 'Workflow Engine API',
     type: 'api',
     url: 'http://localhost:8001/health'
-  },
-  {
-    name: 'User Management DB',
-    type: 'database',
-    url: 'http://localhost:5434'
-  },
-  {
-    name: 'Analytics DB', 
-    type: 'database',
-    url: 'http://localhost:5435'
-  },
-  {
-    name: 'CRM Core DB',
-    type: 'database', 
-    url: 'http://localhost:5432'
-  },
-  {
-    name: 'User Management Redis',
-    type: 'cache',
-    url: 'http://localhost:6381'
-  },
-  {
-    name: 'Analytics Redis',
-    type: 'cache', 
-    url: 'http://localhost:6380'
-  },
-  {
-    name: 'CRM Core Redis',
-    type: 'cache',
-    url: 'http://localhost:6379'
   }
 ]
 
@@ -243,93 +223,48 @@ export default function HealthDashboard() {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [autoRefresh, setAutoRefresh] = useState(true)
 
-  const checkServiceHealth = async (service: Omit<ServiceStatus, 'status' | 'lastCheck' | 'responseTime'>): Promise<ServiceStatus> => {
-    const startTime = Date.now()
-    
-    try {
-      // For API services, try to fetch health endpoint
-      if (service.type === 'api') {
-        const response = await fetch(service.url, { 
-          method: 'GET',
-          signal: AbortSignal.timeout(5000) // 5 second timeout
-        })
-        
-        const responseTime = Date.now() - startTime
-        
-        if (response.ok) {
-          let details = {}
-          try {
-            const data = await response.json()
-            details = {
-              version: data.version,
-              uptime: data.uptime,
-              connections: data.connections
-            }
-          } catch {
-            // If response is not JSON, that's okay
-          }
-          
-          return {
-            ...service,
-            status: 'healthy',
-            responseTime,
-            lastCheck: new Date(),
-            details
-          }
-        } else {
-          return {
-            ...service,
-            status: 'unhealthy',
-            responseTime,
-            lastCheck: new Date(),
-            error: `HTTP ${response.status}: ${response.statusText}`
-          }
-        }
-      } else {
-        // For databases and cache, we'll just try to connect (simplified check)
-        // In a real scenario, you'd have specific health check endpoints
-        const response = await fetch(service.url, { 
-          method: 'HEAD',
-          signal: AbortSignal.timeout(3000)
-        })
-        
-        const responseTime = Date.now() - startTime
-        
-        return {
-          ...service,
-          status: response.ok ? 'healthy' : 'unhealthy',
-          responseTime,
-          lastCheck: new Date(),
-          error: response.ok ? undefined : `Connection failed`
-        }
-      }
-    } catch (error) {
-      const responseTime = Date.now() - startTime
-      return {
-        ...service,
-        status: 'unhealthy',
-        responseTime,
-        lastCheck: new Date(),
-        error: error instanceof Error ? error.message : 'Connection failed'
-      }
-    }
-  }
-
   const refreshAllServices = async () => {
     setIsRefreshing(true)
     
     // Set all services to checking status first
     setServices(prev => prev.length > 0 ? prev.map(s => ({ ...s, status: 'checking' as const })) : 
-      SERVICES.map(s => ({ ...s, status: 'checking' as const, lastCheck: new Date() }))
+      SERVICES.map(s => ({ 
+        ...s, 
+        type: 'api' as const,
+        status: 'checking' as const, 
+        lastCheck: new Date() 
+      }))
     )
 
     try {
-      const checks = await Promise.all(
-        SERVICES.map(service => checkServiceHealth(service))
-      )
-      setServices(checks)
+      const response = await fetch('/api/health')
+      if (response.ok) {
+        const healthData = await response.json()
+        const formattedServices: ServiceStatus[] = healthData.services.map((service: any) => ({
+          name: service.name,
+          type: 'api' as const,
+          url: SERVICES.find(s => s.name === service.name)?.url || '',
+          status: service.status,
+          responseTime: service.responseTime,
+          lastCheck: new Date(service.lastCheck),
+          error: service.error,
+          details: service.details
+        }))
+        setServices(formattedServices)
+      } else {
+        throw new Error('Failed to fetch health data')
+      }
     } catch (error) {
       console.error('Error checking services:', error)
+      // Fallback to unhealthy status for all services
+      const errorServices: ServiceStatus[] = SERVICES.map(service => ({
+        ...service,
+        type: 'api' as const,
+        status: 'unhealthy' as const,
+        lastCheck: new Date(),
+        error: 'Failed to fetch health data'
+      }))
+      setServices(errorServices)
     } finally {
       setIsRefreshing(false)
     }

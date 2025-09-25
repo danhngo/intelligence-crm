@@ -10,17 +10,17 @@ import asyncio
 from redis.asyncio import Redis
 from redis.asyncio.connection import ConnectionPool
 import numpy as np
-from sentence_transformers import SentenceTransformer
+# from sentence_transformers import SentenceTransformer
 import structlog
 
 from app.core.config import settings
 
 logger = structlog.get_logger(__name__)
 
-# Initialize embedding model for semantic caching
+# Initialize embedding model for semantic caching - temporarily disabled
 EMBEDDING_MODEL = None
-if settings.CACHE_EMBEDDINGS:
-    EMBEDDING_MODEL = SentenceTransformer('all-MiniLM-L6-v2')
+# if settings.CACHE_EMBEDDINGS:
+#     EMBEDDING_MODEL = SentenceTransformer('all-MiniLM-L6-v2')
 
 # Create Redis connection pool
 redis_pool = ConnectionPool.from_url(
@@ -155,6 +155,9 @@ async def get_semantic_cache(
     Returns:
         Most similar cached response if found above threshold, None otherwise
     """
+    # Temporarily disabled until sentence_transformers dependency is fixed
+    return None
+    
     if not settings.CACHE_EMBEDDINGS or not EMBEDDING_MODEL:
         return None
         

@@ -9,7 +9,8 @@ import {
   ChatBubbleLeftRightIcon,
   ArrowRightOnRectangleIcon,
   UserCircleIcon,
-  HeartIcon
+  HeartIcon,
+  DocumentTextIcon
 } from '@heroicons/react/24/outline'
 
 const navigation = [
@@ -19,6 +20,7 @@ const navigation = [
   { name: 'Messages', href: '/messages', icon: ChatBubbleLeftRightIcon },
   { name: 'Workflows', href: '/workflows', icon: Cog6ToothIcon },
   { name: 'Health', href: '/health', icon: HeartIcon },
+  { name: 'API Docs', href: '/api-docs', icon: DocumentTextIcon },
 ]
 
 export default function Sidebar() {
@@ -57,7 +59,7 @@ export default function Sidebar() {
             <div className="flex items-center">
               <UserCircleIcon className="h-8 w-8 text-gray-400" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-700">{user.full_name}</p>
+                <p className="text-sm font-medium text-gray-700">{user.first_name} {user.last_name}</p>
                 <p className="text-xs text-gray-500">{user.email}</p>
               </div>
             </div>

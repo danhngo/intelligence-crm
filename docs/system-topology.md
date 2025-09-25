@@ -23,10 +23,22 @@ flowchart TB
             user_redis[(Redis Cache 2)]
         end
 
-        subgraph comm_hub["Communication Hub"]
+        subgraph comm_hub["Communication Hub (8003)"]
             comm_api["Comm API"]
             comm_db[(Comm DB)]
             comm_redis[(Redis Cache 3)]
+        end
+
+        subgraph analytics["Analytics Service (8004)"]
+            analytics_api["Analytics API"]
+            analytics_db[(Analytics DB)]
+            analytics_redis[(Redis Cache 4)]
+        end
+
+        subgraph ai_orchestration["AI Orchestration (8005)"]
+            ai_api["AI API"]
+            ai_db[(AI DB)]
+            ai_redis[(Redis Cache 5)]
         end
 
         %% Database connections
@@ -38,14 +50,23 @@ flowchart TB
         user_api --> user_redis
         comm_api --> comm_db
         comm_api --> comm_redis
+        analytics_api --> analytics_db
+        analytics_api --> analytics_redis
+        ai_api --> ai_db
+        ai_api --> ai_redis
 
         %% Service interactions
         crm_api --> wf_api
         crm_api --> user_api
         crm_api --> comm_api
+        crm_api --> analytics_api
+        crm_api --> ai_api
         wf_api --> user_api
         wf_api --> comm_api
+        wf_api --> ai_api
         user_api --> comm_api
+        analytics_api --> ai_api
+        ai_api --> analytics_api
     end
 ```
 
@@ -87,7 +108,7 @@ flowchart TB
   - Role management
   - Access control
 
-### 4. Communication Hub
+### 4. Communication Hub (Port 8003)
 - **Purpose**: Manages all external communications
 - **Dependencies**:
   - PostgreSQL database
@@ -96,6 +117,29 @@ flowchart TB
   - Message routing
   - Channel management
   - Communication orchestration
+
+### 5. Analytics Service (Port 8004)
+- **Purpose**: Provides business intelligence and analytics
+- **Dependencies**:
+  - PostgreSQL database (analytics)
+  - Redis instance (DB 4)
+  - AI Orchestration service
+- **Key Responsibilities**:
+  - Data analysis and reporting
+  - Performance metrics
+  - Business intelligence dashboards
+
+### 6. AI Orchestration Service (Port 8005)
+- **Purpose**: Manages AI/ML workflows and intelligent automation
+- **Dependencies**:
+  - PostgreSQL database (ai_orchestration)
+  - Redis instance (DB 5)
+  - LangChain integration
+- **Key Responsibilities**:
+  - Lead scoring and qualification
+  - Content generation
+  - Next best action recommendations
+  - Customer insights and analytics
 
 ## Data Flow
 
@@ -108,6 +152,8 @@ flowchart TB
    - Delegates workflow execution to Workflow Engine
    - User Management validates permissions
    - Communication Hub handles external messaging
+   - Analytics Service provides insights and metrics
+   - AI Orchestration enables intelligent automation and recommendations
 
 3. **Data Storage**:
    - Each service has its own PostgreSQL database
@@ -122,8 +168,11 @@ flowchart TB
   - CRM Core: 8000
   - Workflow Engine: 8001
   - User Management: 8002
-  - Postgres instances: 5432-5434
-  - Redis instances: 6379-6381
+  - Communication Hub: 8003
+  - Analytics Service: 8004
+  - AI Orchestration: 8005
+  - Postgres instances: 5432, 5434-5436
+  - Redis instances: 6379-6382
 
 ## Security Considerations
 

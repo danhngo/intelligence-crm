@@ -9,7 +9,7 @@ import {
   ChatBubbleLeftRightIcon, 
   ClockIcon,
   StarIcon,
-  TrendingUpIcon 
+  ArrowTrendingUpIcon 
 } from '@heroicons/react/24/outline'
 
 interface MetricCardProps {
@@ -38,7 +38,7 @@ function MetricCard({ title, value, icon: Icon, trend, color = 'blue' }: MetricC
         {trend && (
           <div className="mt-4">
             <div className="flex items-center text-sm text-green-600">
-              <TrendingUpIcon className="h-4 w-4 mr-1" />
+              <ArrowTrendingUpIcon className="h-4 w-4 mr-1" />
               {trend}
             </div>
           </div>
@@ -136,7 +136,7 @@ export default function Dashboard() {
               <MetricCard
                 title="Conversion Rate"
                 value={`${(metrics.conversion_rate * 100).toFixed(1)}%`}
-                icon={TrendingUpIcon}
+                icon={ArrowTrendingUpIcon}
                 color="indigo"
               />
             </div>

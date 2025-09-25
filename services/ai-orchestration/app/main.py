@@ -14,10 +14,12 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 import structlog
 import uvicorn
+from sqlalchemy import text
 
 from app.core.config import settings
 from app.core.database import engine
 from app.core.cache import redis_client
+from app.api.v1 import api_router
 
 # Configure structured logging
 structlog.configure(
@@ -50,7 +52,7 @@ async def lifespan(app: FastAPI):
     # Test database connection
     try:
         async with engine.begin() as conn:
-            await conn.execute("SELECT 1")
+            await conn.execute(text("SELECT 1"))
         logger.info("Database connection established")
     except Exception as e:
         logger.error("Database connection failed", error=str(e))
@@ -175,7 +177,7 @@ async def readiness_check():
     # Check database
     try:
         async with engine.begin() as conn:
-            await conn.execute("SELECT 1")
+            await conn.execute(text("SELECT 1"))
         checks["database"] = "healthy"
     except Exception as e:
         checks["database"] = f"unhealthy: {str(e)}"
@@ -211,6 +213,13 @@ async def root():
         "status": "running",
         "docs_url": "/docs" if settings.DEBUG else "disabled in production"
     }
+
+
+# Include API routes
+app.include_router(
+    api_router,
+    prefix=settings.API_V1_PREFIX
+)
 
 
 # Global exception handler

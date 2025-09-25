@@ -4,7 +4,7 @@ import uuid
 from typing import Annotated, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
-from sqlalchemy import and_
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -157,12 +157,12 @@ async def execute_workflow(
 
 @router.get("/executions", response_model=List[WorkflowExecution])
 async def list_executions(
+    db: Annotated[AsyncSession, Depends(get_db)],
     tenant_id: Annotated[uuid.UUID, Query()],
     workflow_id: Annotated[Optional[uuid.UUID], Query()] = None,
     status: Annotated[Optional[ExecutionStatus], Query()] = None,
     skip: Annotated[int, Query(ge=0)] = 0,
-    limit: Annotated[int, Query(ge=1, le=100)] = 20,
-    db: Annotated[AsyncSession, Depends(get_db)]
+    limit: Annotated[int, Query(ge=1, le=100)] = 20
 ) -> List[WorkflowExecutionModel]:
     """List workflow executions."""
     query = select(WorkflowExecutionModel).where(
