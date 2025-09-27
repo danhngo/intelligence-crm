@@ -10,12 +10,12 @@ import type {
   ContactSegment
 } from '@/types/api';
 
-const COMMUNICATION_HUB_BASE_URL = 'http://localhost:8004/api/v1';
+const COMMUNICATION_HUB_BASE_URL = `${process.env.NEXT_PUBLIC_COMMUNICATION_API_URL || 'http://localhost:8003'}/api/v1`;
 
 // Helper function to get auth headers
 const getAuthHeaders = () => ({
   'Content-Type': 'application/json',
-  'Authorization': `Bearer ${localStorage.getItem('token')}`,
+  'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
 });
 
 // Campaign Hooks

@@ -1,0 +1,398 @@
+{
+  "info": {
+    "name": "AI Orchestration API",
+    "description": "Intelligent automation engine for CRM platform AI capabilities",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "test-auth-token-123",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8005",
+      "type": "string"
+    },
+    {
+      "key": "apiVersion",
+      "value": "v1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Info",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Readiness Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health/ready",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", "ready"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Service Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AI Workflows",
+      "item": [
+        {
+          "name": "List Workflows",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows?skip=0&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows"],
+              "query": [
+                {
+                  "key": "skip",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "lead_scoring",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Workflow",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Lead Scoring Workflow\",\n  \"description\": \"Automated lead scoring based on engagement and profile data\",\n  \"category\": \"lead_scoring\",\n  \"trigger\": {\n    \"type\": \"event\",\n    \"event_name\": \"contact_updated\",\n    \"conditions\": [\n      {\n        \"field\": \"email\",\n        \"operator\": \"is_not_null\"\n      }\n    ]\n  },\n  \"steps\": [\n    {\n      \"id\": \"analyze_engagement\",\n      \"type\": \"ai_analysis\",\n      \"config\": {\n        \"model\": \"engagement_scorer\",\n        \"inputs\": [\"email_opens\", \"link_clicks\", \"page_views\"],\n        \"output_field\": \"engagement_score\"\n      }\n    },\n    {\n      \"id\": \"calculate_final_score\",\n      \"type\": \"calculation\",\n      \"config\": {\n        \"formula\": \"(engagement_score * 0.6) + (profile_score * 0.4)\",\n        \"output_field\": \"lead_score\"\n      }\n    }\n  ],\n  \"settings\": {\n    \"max_retries\": 3,\n    \"timeout_seconds\": 300\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Workflow",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Execute Workflow",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input_data\": {\n    \"contact_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"email_opens\": 15,\n    \"link_clicks\": 8,\n    \"page_views\": 25,\n    \"company_size\": \"50-200\",\n    \"job_title\": \"Marketing Manager\",\n    \"industry\": \"technology\"\n  },\n  \"execution_mode\": \"sync\",\n  \"callback_url\": \"https://api.example.com/webhooks/workflow-complete\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}/execute",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}", "execute"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Workflow Execution",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}/executions/{{execution_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}", "executions", "{{execution_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AI Models",
+      "item": [
+        {
+          "name": "List Models",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/models",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "models"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deploy Model",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"lead_scoring_model_v2\",\n  \"description\": \"Enhanced lead scoring model with improved accuracy\",\n  \"type\": \"classification\",\n  \"framework\": \"scikit-learn\",\n  \"version\": \"2.1.0\",\n  \"model_config\": {\n    \"algorithm\": \"random_forest\",\n    \"hyperparameters\": {\n      \"n_estimators\": 100,\n      \"max_depth\": 10,\n      \"random_state\": 42\n    }\n  },\n  \"input_schema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"engagement_score\": {\"type\": \"number\"},\n      \"profile_score\": {\"type\": \"number\"},\n      \"interaction_frequency\": {\"type\": \"number\"}\n    },\n    \"required\": [\"engagement_score\", \"profile_score\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/models",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "models"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Predict with Model",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"inputs\": {\n    \"engagement_score\": 0.75,\n    \"profile_score\": 0.85,\n    \"interaction_frequency\": 12\n  },\n  \"options\": {\n    \"include_confidence\": true,\n    \"include_explanation\": true\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/models/{{model_id}}/predict",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "models", "{{model_id}}", "predict"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Predictions",
+      "item": [
+        {
+          "name": "Batch Predict",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model_id\": \"{{model_id}}\",\n  \"batch_data\": [\n    {\n      \"id\": \"contact_1\",\n      \"inputs\": {\n        \"engagement_score\": 0.65,\n        \"profile_score\": 0.80,\n        \"interaction_frequency\": 8\n      }\n    },\n    {\n      \"id\": \"contact_2\",\n      \"inputs\": {\n        \"engagement_score\": 0.90,\n        \"profile_score\": 0.95,\n        \"interaction_frequency\": 15\n      }\n    }\n  ],\n  \"callback_url\": \"https://api.example.com/webhooks/batch-complete\",\n  \"priority\": \"high\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/predictions/batch",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "predictions", "batch"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Prediction Job",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/predictions/{{job_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "predictions", "{{job_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Training",
+      "item": [
+        {
+          "name": "Start Training",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model_name\": \"lead_scoring_v3\",\n  \"training_data\": {\n    \"source\": \"database\",\n    \"query\": \"SELECT * FROM contact_features WHERE created_at > '2024-01-01'\",\n    \"target_column\": \"converted\"\n  },\n  \"algorithm\": \"xgboost\",\n  \"hyperparameters\": {\n    \"learning_rate\": 0.1,\n    \"max_depth\": 6,\n    \"n_estimators\": 200\n  },\n  \"validation\": {\n    \"method\": \"cross_validation\",\n    \"folds\": 5,\n    \"test_size\": 0.2\n  },\n  \"auto_deploy\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/training/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "training", "jobs"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Training Job",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/training/jobs/{{job_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "training", "jobs", "{{job_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

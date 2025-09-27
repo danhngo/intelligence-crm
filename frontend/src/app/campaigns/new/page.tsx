@@ -16,7 +16,7 @@ export default function NewCampaignPage() {
   const [formData, setFormData] = useState<CampaignCreate>({
     name: '',
     description: '',
-    type: 'EMAIL',
+    type: 'email',
     subject_line: '',
     sender_name: '',
     sender_email: '',
@@ -131,10 +131,10 @@ export default function NewCampaignPage() {
                         value={formData.type}
                         onChange={(e) => handleInputChange('type', e.target.value as CampaignType)}
                       >
-                        <option value="EMAIL">Email</option>
-                        <option value="SMS">SMS</option>
-                        <option value="WHATSAPP">WhatsApp</option>
-                        <option value="MULTI_CHANNEL">Multi-Channel</option>
+                        <option value="email">Email</option>
+                        <option value="sms">SMS</option>
+                        <option value="whatsapp">WhatsApp</option>
+                        <option value="multi_channel">Multi-Channel</option>
                       </select>
                     </div>
                   </div>
@@ -143,7 +143,7 @@ export default function NewCampaignPage() {
             </div>
 
             {/* Email Settings (only show for email campaigns) */}
-            {formData.type === 'EMAIL' && (
+            {formData.type === 'email' && (
               <div className="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
                 <div className="md:grid md:grid-cols-3 md:gap-6">
                   <div className="md:col-span-1">

@@ -1,0 +1,436 @@
+{
+  "info": {
+    "name": "Analytics Service API",
+    "description": "Analytics and metrics service for the CRM platform",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "test-auth-token-123",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8004",
+      "type": "string"
+    },
+    {
+      "key": "apiVersion",
+      "value": "v1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Info",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Service Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Get Dashboard Metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/analytics/dashboard?period=7d",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "analytics", "dashboard"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "7d",
+                  "description": "Time period: 1d, 7d, 30d, 90d, 1y"
+                },
+                {
+                  "key": "timezone",
+                  "value": "UTC",
+                  "disabled": true,
+                  "description": "Timezone for date calculations"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Campaign Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/analytics/campaigns?campaign_id={{campaign_id}}&metrics=opens,clicks,conversions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "analytics", "campaigns"],
+              "query": [
+                {
+                  "key": "campaign_id",
+                  "value": "{{campaign_id}}",
+                  "description": "Specific campaign ID (optional)"
+                },
+                {
+                  "key": "metrics",
+                  "value": "opens,clicks,conversions",
+                  "description": "Comma-separated list of metrics"
+                },
+                {
+                  "key": "start_date",
+                  "value": "2024-01-01",
+                  "disabled": true,
+                  "description": "Start date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2024-12-31",
+                  "disabled": true,
+                  "description": "End date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "group_by",
+                  "value": "day",
+                  "disabled": true,
+                  "description": "Group by: hour, day, week, month"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Contact Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/analytics/contacts?metrics=total,active,new,segments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "analytics", "contacts"],
+              "query": [
+                {
+                  "key": "metrics",
+                  "value": "total,active,new,segments",
+                  "description": "Comma-separated list of contact metrics"
+                },
+                {
+                  "key": "period",
+                  "value": "30d",
+                  "disabled": true,
+                  "description": "Time period for new contacts"
+                },
+                {
+                  "key": "segment",
+                  "value": "",
+                  "disabled": true,
+                  "description": "Filter by specific segment"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Revenue Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/analytics/revenue?period=90d&group_by=month",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "analytics", "revenue"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "90d",
+                  "description": "Time period for revenue data"
+                },
+                {
+                  "key": "group_by",
+                  "value": "month",
+                  "description": "Group by: day, week, month, quarter"
+                },
+                {
+                  "key": "currency",
+                  "value": "USD",
+                  "disabled": true,
+                  "description": "Currency for revenue calculations"
+                },
+                {
+                  "key": "include_forecast",
+                  "value": "true",
+                  "disabled": true,
+                  "description": "Include revenue forecasting"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Engagement Metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/analytics/engagement?channel=email&period=30d",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "analytics", "engagement"],
+              "query": [
+                {
+                  "key": "channel",
+                  "value": "email",
+                  "description": "Communication channel: email, sms, push"
+                },
+                {
+                  "key": "period",
+                  "value": "30d",
+                  "description": "Time period for engagement data"
+                },
+                {
+                  "key": "segment",
+                  "value": "",
+                  "disabled": true,
+                  "description": "Filter by contact segment"
+                },
+                {
+                  "key": "include_benchmarks",
+                  "value": "true",
+                  "disabled": true,
+                  "description": "Include industry benchmarks"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Track Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_name\": \"email_opened\",\n  \"contact_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"campaign_id\": \"550e8400-e29b-41d4-a716-446655440001\",\n  \"properties\": {\n    \"email_id\": \"550e8400-e29b-41d4-a716-446655440002\",\n    \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\",\n    \"ip_address\": \"192.168.1.1\",\n    \"opened_at\": \"2024-11-25T10:30:00Z\",\n    \"location\": {\n      \"country\": \"US\",\n      \"city\": \"San Francisco\",\n      \"region\": \"CA\"\n    },\n    \"device\": {\n      \"type\": \"desktop\",\n      \"os\": \"Windows\",\n      \"browser\": \"Chrome\"\n    }\n  },\n  \"timestamp\": \"2024-11-25T10:30:00Z\",\n  \"metadata\": {\n    \"source\": \"email_tracking\",\n    \"version\": \"1.0\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/analytics/events",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "analytics", "events"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Bulk Track Events",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"events\": [\n    {\n      \"event_name\": \"email_opened\",\n      \"contact_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"campaign_id\": \"550e8400-e29b-41d4-a716-446655440001\",\n      \"timestamp\": \"2024-11-25T10:30:00Z\",\n      \"properties\": {\n        \"email_id\": \"550e8400-e29b-41d4-a716-446655440002\"\n      }\n    },\n    {\n      \"event_name\": \"link_clicked\",\n      \"contact_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"campaign_id\": \"550e8400-e29b-41d4-a716-446655440001\",\n      \"timestamp\": \"2024-11-25T10:35:00Z\",\n      \"properties\": {\n        \"email_id\": \"550e8400-e29b-41d4-a716-446655440002\",\n        \"link_url\": \"https://example.com/product\",\n        \"link_text\": \"View Product\"\n      }\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/analytics/events/bulk",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "analytics", "events", "bulk"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"report_type\": \"campaign_performance\",\n  \"parameters\": {\n    \"start_date\": \"2024-01-01\",\n    \"end_date\": \"2024-12-31\",\n    \"campaign_ids\": [\"550e8400-e29b-41d4-a716-446655440001\"],\n    \"metrics\": [\"sends\", \"opens\", \"clicks\", \"conversions\", \"revenue\"],\n    \"group_by\": \"month\",\n    \"include_comparisons\": true\n  },\n  \"format\": \"json\",\n  \"delivery\": {\n    \"method\": \"api\",\n    \"email\": \"admin@example.com\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/analytics/reports",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "analytics", "reports"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Funnel Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/analytics/funnel?steps=email_sent,email_opened,link_clicked,conversion&period=30d",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "analytics", "funnel"],
+              "query": [
+                {
+                  "key": "steps",
+                  "value": "email_sent,email_opened,link_clicked,conversion",
+                  "description": "Comma-separated funnel steps"
+                },
+                {
+                  "key": "period",
+                  "value": "30d",
+                  "description": "Analysis period"
+                },
+                {
+                  "key": "segment",
+                  "value": "",
+                  "disabled": true,
+                  "description": "Filter by contact segment"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Cohort Analysis",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/analytics/cohort?cohort_type=acquisition&metric=retention&periods=12",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "analytics", "cohort"],
+              "query": [
+                {
+                  "key": "cohort_type",
+                  "value": "acquisition",
+                  "description": "Cohort type: acquisition, activation, etc."
+                },
+                {
+                  "key": "metric",
+                  "value": "retention",
+                  "description": "Metric to analyze: retention, revenue, etc."
+                },
+                {
+                  "key": "periods",
+                  "value": "12",
+                  "description": "Number of periods to analyze"
+                },
+                {
+                  "key": "period_type",
+                  "value": "month",
+                  "disabled": true,
+                  "description": "Period type: day, week, month"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

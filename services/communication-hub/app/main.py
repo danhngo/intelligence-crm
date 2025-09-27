@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.v1 import communications, channels, messages
+from app.api.v1 import communications, channels, messages, campaigns, templates
 from app.core.config import settings
 from app.core.database import engine
 from app.core.redis import redis_manager
@@ -35,14 +35,23 @@ async def lifespan(app: FastAPI):
     await redis_manager.initialize()
     logger.info("✅ Redis connection established")
     
-    # Test database connection
+    # Test database connection and create tables
     try:
         from sqlalchemy import text
         async with engine.begin() as conn:
             result = await conn.execute(text("SELECT 1"))
             logger.info("✅ Database connection established")
+            
+        # Import models to ensure they're registered
+        from app.models import campaign, message
+        
+        # Create tables
+        from app.core.database import create_tables
+        await create_tables()
+        logger.info("✅ Database tables created/updated")
+        
     except Exception as e:
-        logger.error(f"❌ Database connection failed: {e}")
+        logger.error(f"❌ Database setup failed: {e}")
     
     logger.info("🚀 Communication Hub Service started successfully!")
     
@@ -140,6 +149,18 @@ app.include_router(
     messages.router,
     prefix="/api/v1/messages",
     tags=["messages"]
+)
+
+app.include_router(
+    campaigns.router,
+    prefix="/api/v1/campaigns",
+    tags=["campaigns"]
+)
+
+app.include_router(
+    templates.router,
+    prefix="/api/v1/templates",
+    tags=["templates"]
 )
 
 

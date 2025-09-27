@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.v1 import contacts
+from app.api.v1 import contacts, companies, leads, deals, activities
 from app.core.config import settings
 from app.core.database import close_db_connection, engine
 
@@ -92,4 +92,28 @@ app.include_router(
     contacts.router,
     prefix=f"{settings.API_V1_PREFIX}/contacts",
     tags=["contacts"]
+)
+
+app.include_router(
+    companies.router,
+    prefix=f"{settings.API_V1_PREFIX}/companies",
+    tags=["companies"]
+)
+
+app.include_router(
+    leads.router,
+    prefix=f"{settings.API_V1_PREFIX}/leads",
+    tags=["leads"]
+)
+
+app.include_router(
+    deals.router,
+    prefix=f"{settings.API_V1_PREFIX}/deals",
+    tags=["deals"]
+)
+
+app.include_router(
+    activities.router,
+    prefix=f"{settings.API_V1_PREFIX}/activities",
+    tags=["activities"]
 )

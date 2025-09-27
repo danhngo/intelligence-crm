@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Set Auth Token</title>
+</head>
+<body>
+    <h1>Setting Auth Token...</h1>
+    <script>
+        // Set a test token for development
+        localStorage.setItem('access_token', 'test-auth-token-123');
+        document.body.innerHTML = '<h1>Auth token set!</h1><p>You can now go to <a href="/templates">Templates</a> or <a href="/campaigns">Campaigns</a></p>';
+    </script>
+</body>
+</html>

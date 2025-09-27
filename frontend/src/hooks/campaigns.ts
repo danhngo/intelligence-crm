@@ -11,7 +11,7 @@ import type {
 } from '@/types/api';
 import { getAuthHeaders } from '@/lib/auth';
 
-const COMMUNICATION_HUB_BASE_URL = 'http://localhost:8004/api/v1';
+const COMMUNICATION_HUB_BASE_URL = `${process.env.NEXT_PUBLIC_COMMUNICATION_API_URL || 'http://localhost:8003'}/api/v1`;
 
 // Campaign Hooks
 export const useCampaigns = (params?: {
@@ -29,7 +29,7 @@ export const useCampaigns = (params?: {
     if (params?.campaign_type) searchParams.append('campaign_type', params.campaign_type);
     if (params?.search) searchParams.append('search', params.search);
     
-    const response = await fetch(`${COMMUNICATION_HUB_BASE_URL}/campaigns?${searchParams}`, {
+    const response = await fetch(`${COMMUNICATION_HUB_BASE_URL}/campaigns/?${searchParams}`, {
       headers: getAuthHeaders(),
     });
     
@@ -64,7 +64,7 @@ export const useCreateCampaign = () => {
   const queryClient = useQueryClient();
   
   return useMutation(async (campaign: CampaignCreate): Promise<Campaign> => {
-    const response = await fetch(`${COMMUNICATION_HUB_BASE_URL}/campaigns`, {
+    const response = await fetch(`${COMMUNICATION_HUB_BASE_URL}/campaigns/`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(campaign),
@@ -255,7 +255,7 @@ export const useEmailTemplates = (params?: {
     if (params?.search) searchParams.append('search', params.search);
     if (params?.is_active !== undefined) searchParams.append('is_active', params.is_active.toString());
     
-    const response = await fetch(`${COMMUNICATION_HUB_BASE_URL}/templates?${searchParams}`, {
+    const response = await fetch(`${COMMUNICATION_HUB_BASE_URL}/templates/?${searchParams}`, {
       headers: getAuthHeaders(),
     });
     
@@ -272,7 +272,7 @@ export const useCreateEmailTemplate = () => {
   const queryClient = useQueryClient();
   
   return useMutation(async (template: EmailTemplateCreate): Promise<EmailTemplate> => {
-    const response = await fetch(`${COMMUNICATION_HUB_BASE_URL}/templates`, {
+    const response = await fetch(`${COMMUNICATION_HUB_BASE_URL}/templates/`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(template),

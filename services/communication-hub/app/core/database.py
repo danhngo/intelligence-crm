@@ -2,7 +2,6 @@
 
 import logging
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import declarative_base
 
 from app.core.config import settings
 
@@ -23,9 +22,6 @@ AsyncSessionLocal = async_sessionmaker(
     expire_on_commit=False,
 )
 
-# Create declarative base
-Base = declarative_base()
-
 
 async def get_db() -> AsyncSession:
     """Dependency to get database session."""
@@ -42,5 +38,6 @@ async def get_db() -> AsyncSession:
 
 async def create_tables():
     """Create database tables."""
+    from app.models.base import Base
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

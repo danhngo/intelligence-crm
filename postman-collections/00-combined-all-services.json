@@ -1,0 +1,611 @@
+{
+  "info": {
+    "name": "CRM Platform - All Services",
+    "description": "Complete API collection for all microservices in the CRM platform",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "test-auth-token-123",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "crmCoreUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "workflowEngineUrl",
+      "value": "http://localhost:8001",
+      "type": "string"
+    },
+    {
+      "key": "userManagementUrl",
+      "value": "http://localhost:8002",
+      "type": "string"
+    },
+    {
+      "key": "communicationHubUrl",
+      "value": "http://localhost:8003",
+      "type": "string"
+    },
+    {
+      "key": "analyticsUrl",
+      "value": "http://localhost:8004",
+      "type": "string"
+    },
+    {
+      "key": "aiOrchestrationUrl",
+      "value": "http://localhost:8005",
+      "type": "string"
+    },
+    {
+      "key": "apiVersion",
+      "value": "v1",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "test-auth-token-123",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication (Port 8002)",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "test@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "test12345",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{userManagementUrl}}/api/{{apiVersion}}/auth/login",
+              "host": ["{{userManagementUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"securepassword123\",\n  \"full_name\": \"New User\",\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{userManagementUrl}}/api/{{apiVersion}}/auth/register",
+              "host": ["{{userManagementUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{userManagementUrl}}/api/{{apiVersion}}/auth/me",
+              "host": ["{{userManagementUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Contacts (Port 8000)",
+      "item": [
+        {
+          "name": "List Contacts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{crmCoreUrl}}/api/{{apiVersion}}/contacts?skip=0&limit=20",
+              "host": ["{{crmCoreUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contacts"],
+              "query": [
+                {
+                  "key": "skip",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Contact",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"+1-555-123-4567\",\n  \"company\": \"Example Corp\",\n  \"job_title\": \"Software Engineer\",\n  \"status\": \"active\",\n  \"tags\": [\"customer\", \"enterprise\", \"tech\"]\n}"
+            },
+            "url": {
+              "raw": "{{crmCoreUrl}}/api/{{apiVersion}}/contacts",
+              "host": ["{{crmCoreUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contacts"]
+            }
+          }
+        },
+        {
+          "name": "Get Contact",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{crmCoreUrl}}/api/{{apiVersion}}/contacts/{{contact_id}}",
+              "host": ["{{crmCoreUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contacts", "{{contact_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📧 Email Templates (Port 8003)",
+      "item": [
+        {
+          "name": "List Templates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{communicationHubUrl}}/api/{{apiVersion}}/templates/?skip=0&limit=20",
+              "host": ["{{communicationHubUrl}}"],
+              "path": ["api", "{{apiVersion}}", "templates", ""]
+            }
+          }
+        },
+        {
+          "name": "Create Template",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Welcome Email Template\",\n  \"description\": \"Email template for welcoming new users\",\n  \"subject_template\": \"Welcome to {{company_name}}, {{first_name}}!\",\n  \"html_template\": \"<h1>Welcome {{first_name}}!</h1><p>Thank you for joining {{company_name}}.</p>\",\n  \"text_template\": \"Welcome {{first_name}}! Thank you for joining {{company_name}}.\",\n  \"variables\": [\"first_name\", \"company_name\"],\n  \"category\": \"onboarding\",\n  \"tags\": [\"welcome\", \"onboarding\"]\n}"
+            },
+            "url": {
+              "raw": "{{communicationHubUrl}}/api/{{apiVersion}}/templates/",
+              "host": ["{{communicationHubUrl}}"],
+              "path": ["api", "{{apiVersion}}", "templates", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Campaigns (Port 8003)",
+      "item": [
+        {
+          "name": "List Campaigns",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{communicationHubUrl}}/api/{{apiVersion}}/campaigns/?skip=0&limit=20",
+              "host": ["{{communicationHubUrl}}"],
+              "path": ["api", "{{apiVersion}}", "campaigns", ""]
+            }
+          }
+        },
+        {
+          "name": "Create Campaign",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Welcome Campaign\",\n  \"description\": \"Welcome new users to our platform\",\n  \"type\": \"email\",\n  \"target_segments\": [\"new_users\"],\n  \"template_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"subject_line\": \"Welcome to our platform!\",\n  \"sender_name\": \"Welcome Team\",\n  \"sender_email\": \"welcome@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{communicationHubUrl}}/api/{{apiVersion}}/campaigns/",
+              "host": ["{{communicationHubUrl}}"],
+              "path": ["api", "{{apiVersion}}", "campaigns", ""]
+            }
+          }
+        },
+        {
+          "name": "Start Campaign",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{communicationHubUrl}}/api/{{apiVersion}}/campaigns/{{campaign_id}}/start",
+              "host": ["{{communicationHubUrl}}"],
+              "path": ["api", "{{apiVersion}}", "campaigns", "{{campaign_id}}", "start"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📈 Analytics (Port 8004)",
+      "item": [
+        {
+          "name": "Dashboard Metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{analyticsUrl}}/api/{{apiVersion}}/analytics/dashboard?period=7d",
+              "host": ["{{analyticsUrl}}"],
+              "path": ["api", "{{apiVersion}}", "analytics", "dashboard"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "7d"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Campaign Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{analyticsUrl}}/api/{{apiVersion}}/analytics/campaigns?metrics=opens,clicks,conversions",
+              "host": ["{{analyticsUrl}}"],
+              "path": ["api", "{{apiVersion}}", "analytics", "campaigns"],
+              "query": [
+                {
+                  "key": "metrics",
+                  "value": "opens,clicks,conversions"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Track Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_name\": \"email_opened\",\n  \"contact_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"campaign_id\": \"550e8400-e29b-41d4-a716-446655440001\",\n  \"properties\": {\n    \"email_id\": \"550e8400-e29b-41d4-a716-446655440002\",\n    \"user_agent\": \"Mozilla/5.0\"\n  },\n  \"timestamp\": \"2024-11-25T10:30:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{analyticsUrl}}/api/{{apiVersion}}/analytics/events",
+              "host": ["{{analyticsUrl}}"],
+              "path": ["api", "{{apiVersion}}", "analytics", "events"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🤖 AI Orchestration (Port 8005)",
+      "item": [
+        {
+          "name": "List AI Workflows",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{aiOrchestrationUrl}}/api/{{apiVersion}}/workflows?skip=0&limit=20",
+              "host": ["{{aiOrchestrationUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows"]
+            }
+          }
+        },
+        {
+          "name": "List AI Models",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{aiOrchestrationUrl}}/api/{{apiVersion}}/models",
+              "host": ["{{aiOrchestrationUrl}}"],
+              "path": ["api", "{{apiVersion}}", "models"]
+            }
+          }
+        },
+        {
+          "name": "Predict with Model",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"inputs\": {\n    \"engagement_score\": 0.75,\n    \"profile_score\": 0.85,\n    \"interaction_frequency\": 12\n  },\n  \"options\": {\n    \"include_confidence\": true\n  }\n}"
+            },
+            "url": {
+              "raw": "{{aiOrchestrationUrl}}/api/{{apiVersion}}/models/{{model_id}}/predict",
+              "host": ["{{aiOrchestrationUrl}}"],
+              "path": ["api", "{{apiVersion}}", "models", "{{model_id}}", "predict"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚡ Workflow Engine (Port 8001)",
+      "item": [
+        {
+          "name": "List Workflows",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{workflowEngineUrl}}/api/{{apiVersion}}/workflows?skip=0&limit=20",
+              "host": ["{{workflowEngineUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows"]
+            }
+          }
+        },
+        {
+          "name": "Create Workflow",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Welcome Email Sequence\",\n  \"description\": \"Automated welcome email sequence for new contacts\",\n  \"category\": \"email_automation\",\n  \"trigger\": {\n    \"type\": \"contact_created\",\n    \"conditions\": {\n      \"status\": \"active\",\n      \"has_email\": true\n    }\n  },\n  \"steps\": [\n    {\n      \"id\": \"wait_1hour\",\n      \"type\": \"delay\",\n      \"config\": {\n        \"duration\": \"1h\"\n      }\n    },\n    {\n      \"id\": \"send_welcome_email\",\n      \"type\": \"send_email\",\n      \"config\": {\n        \"template_id\": \"welcome_template_1\",\n        \"from_email\": \"welcome@example.com\"\n      }\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{workflowEngineUrl}}/api/{{apiVersion}}/workflows",
+              "host": ["{{workflowEngineUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows"]
+            }
+          }
+        },
+        {
+          "name": "Trigger Workflow",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contact_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"trigger_data\": {\n    \"event\": \"contact_created\",\n    \"timestamp\": \"2024-11-25T10:00:00Z\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{workflowEngineUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}/trigger",
+              "host": ["{{workflowEngineUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}", "trigger"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔍 Health Checks",
+      "item": [
+        {
+          "name": "CRM Core Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{crmCoreUrl}}/health",
+              "host": ["{{crmCoreUrl}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "User Management Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{userManagementUrl}}/health",
+              "host": ["{{userManagementUrl}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "Communication Hub Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{communicationHubUrl}}/health",
+              "host": ["{{communicationHubUrl}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "Analytics Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{analyticsUrl}}/health",
+              "host": ["{{analyticsUrl}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "AI Orchestration Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{aiOrchestrationUrl}}/health",
+              "host": ["{{aiOrchestrationUrl}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "Workflow Engine Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{workflowEngineUrl}}/health",
+              "host": ["{{workflowEngineUrl}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

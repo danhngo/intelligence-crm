@@ -60,7 +60,31 @@ This platform directly supports the dual objectives of:
 4. IF new customer data is available THEN the AI SHALL proactively identify significant patterns and alert users
 5. WHEN users interact with insights THEN the system SHALL learn from feedback to improve future recommendations
 
-### Requirement 5: Multi-Channel Communication Hub
+### Requirement 5: Email Campaign Management and Tracking
+
+**User Story:** As a marketing manager, I want to create, manage, and track multi-channel email campaigns with real-time analytics, so that I can optimize campaign performance and engagement.
+
+#### Acceptance Criteria
+
+1. WHEN creating a campaign THEN the system SHALL support email, SMS, WhatsApp, and multi-channel campaign types
+2. WHEN launching a campaign THEN the system SHALL track real-time open rates, click rates, and engagement metrics
+3. WHEN recipients interact with emails THEN the system SHALL capture pixel-based opens and link clicks within 1 second
+4. IF campaign metrics fall below thresholds THEN the system SHALL alert campaign managers with optimization suggestions
+5. WHEN viewing campaign analytics THEN users SHALL access detailed event timelines, bounce rates, and unsubscribe data
+
+### Requirement 6: Email Template Management System
+
+**User Story:** As a marketing content creator, I want to design, manage, and reuse email templates across campaigns, so that I can maintain brand consistency and improve productivity.
+
+#### Acceptance Criteria
+
+1. WHEN creating email templates THEN the system SHALL provide HTML editor with variable substitution capabilities
+2. WHEN organizing templates THEN users SHALL categorize by type (Marketing, Transactional, Newsletter, Welcome, Promotional)
+3. WHEN using templates in campaigns THEN the system SHALL support dynamic content and personalization variables
+4. IF template variables are missing THEN the system SHALL validate and alert users before campaign launch
+5. WHEN templates are updated THEN the system SHALL version control changes and maintain template history
+
+### Requirement 7: Multi-Channel Communication Hub
 
 **User Story:** As a customer success manager, I want to manage all customer communications from one platform, so that I can provide consistent service across email, chat, and social media.
 
@@ -72,7 +96,7 @@ This platform directly supports the dual objectives of:
 4. IF a customer interaction requires escalation THEN the system SHALL automatically route to appropriate team members
 5. WHEN managing multiple conversations THEN the system SHALL provide priority scoring and response time tracking
 
-### Requirement 6: Advanced Analytics and Reporting
+### Requirement 8: Advanced Analytics and Reporting
 
 **User Story:** As a business owner, I want comprehensive analytics and AI-generated reports, so that I can understand my marketing performance and identify growth opportunities.
 
@@ -84,7 +108,7 @@ This platform directly supports the dual objectives of:
 4. IF performance metrics deviate from expected ranges THEN the system SHALL alert users with recommended actions
 5. WHEN exporting data THEN the system SHALL support multiple formats (PDF, Excel, CSV) with scheduling options
 
-### Requirement 7: User Management and Access Control
+### Requirement 9: User Management and Access Control
 
 **User Story:** As an administrator, I want granular user management and role-based access control, so that I can ensure data security and operational efficiency.
 

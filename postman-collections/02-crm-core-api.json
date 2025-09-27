@@ -1,0 +1,315 @@
+{
+  "info": {
+    "name": "CRM Core API",
+    "description": "Customer relationship management service",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "test-auth-token-123",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "apiVersion",
+      "value": "v1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Info",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Service Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Contacts",
+      "item": [
+        {
+          "name": "List Contacts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contacts?skip=0&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contacts"],
+              "query": [
+                {
+                  "key": "skip",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "disabled": true
+                },
+                {
+                  "key": "email",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "phone",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Contact",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"+1-555-123-4567\",\n  \"company\": \"Example Corp\",\n  \"job_title\": \"Software Engineer\",\n  \"status\": \"active\",\n  \"tags\": [\"customer\", \"enterprise\", \"tech\"],\n  \"source\": \"website\",\n  \"address\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"postal_code\": \"94105\",\n    \"country\": \"USA\"\n  },\n  \"social_profiles\": {\n    \"linkedin\": \"https://linkedin.com/in/johndoe\",\n    \"twitter\": \"@johndoe\"\n  },\n  \"custom_fields\": {\n    \"lead_score\": 85,\n    \"preferred_contact_method\": \"email\",\n    \"industry\": \"technology\",\n    \"company_size\": \"50-200\"\n  },\n  \"notes\": \"Interested in enterprise solutions. Follow up in 2 weeks.\",\n  \"extra_data\": {\n    \"utm_source\": \"google\",\n    \"utm_medium\": \"cpc\",\n    \"utm_campaign\": \"spring2024\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contacts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contacts"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Contact",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contacts/{{contact_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contacts", "{{contact_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Contact",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"job_title\": \"Senior Software Engineer\",\n  \"company\": \"Example Corp (Updated)\",\n  \"status\": \"active\",\n  \"tags\": [\"customer\", \"enterprise\", \"tech\", \"senior\"],\n  \"custom_fields\": {\n    \"lead_score\": 92,\n    \"preferred_contact_method\": \"email\",\n    \"last_interaction\": \"2024-11-25\",\n    \"deal_stage\": \"negotiation\"\n  },\n  \"notes\": \"Promoted to senior position. Increased lead score. Currently in negotiation phase.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contacts/{{contact_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contacts", "{{contact_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Contact",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contacts/{{contact_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contacts", "{{contact_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Contacts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contacts/search?q=john&fields=first_name,last_name,email&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contacts", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "john",
+                  "description": "Search query"
+                },
+                {
+                  "key": "fields",
+                  "value": "first_name,last_name,email",
+                  "description": "Fields to search in"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Maximum results"
+                },
+                {
+                  "key": "company",
+                  "value": "Example Corp",
+                  "disabled": true,
+                  "description": "Filter by company"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "disabled": true,
+                  "description": "Filter by status"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Bulk Import Contacts",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contacts\": [\n    {\n      \"first_name\": \"Alice\",\n      \"last_name\": \"Johnson\",\n      \"email\": \"alice.johnson@example.com\",\n      \"phone\": \"+1-555-234-5678\",\n      \"company\": \"Tech Solutions Inc\",\n      \"job_title\": \"Product Manager\",\n      \"tags\": [\"prospect\", \"tech\"]\n    },\n    {\n      \"first_name\": \"Bob\",\n      \"last_name\": \"Smith\",\n      \"email\": \"bob.smith@example.com\",\n      \"phone\": \"+1-555-345-6789\",\n      \"company\": \"Marketing Pro\",\n      \"job_title\": \"Marketing Director\",\n      \"tags\": [\"customer\", \"marketing\"]\n    }\n  ],\n  \"options\": {\n    \"skip_duplicates\": true,\n    \"update_existing\": false,\n    \"validate_emails\": true\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contacts/bulk-import",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contacts", "bulk-import"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Export Contacts",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"format\": \"csv\",\n  \"fields\": [\"first_name\", \"last_name\", \"email\", \"company\", \"job_title\", \"created_at\"],\n  \"filters\": {\n    \"status\": \"active\",\n    \"created_after\": \"2024-01-01\",\n    \"tags\": [\"customer\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/contacts/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "contacts", "export"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

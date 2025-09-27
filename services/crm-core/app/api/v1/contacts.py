@@ -124,3 +124,70 @@ async def delete_contact(
             status_code=404,
             detail="Contact not found"
         )
+
+
+@router.get("/search", response_model=ContactList)
+async def search_contacts(
+    tenant_id: Annotated[uuid.UUID, Query()],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    q: Annotated[str, Query(description="Search query")],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    fields: Annotated[str | None, Query(description="Fields to search in")] = None
+) -> ContactList:
+    """Search contacts with advanced query."""
+    repo = ContactRepository(db)
+    
+    # Use the existing list method with search parameter
+    contacts = await repo.list(tenant_id, 0, limit, q)
+    total = await repo.count(tenant_id, q)
+    
+    return ContactList(
+        items=contacts,
+        total=total,
+        skip=0,
+        limit=limit
+    )
+
+
+@router.post("/bulk-import")
+async def bulk_import_contacts(
+    tenant_id: Annotated[uuid.UUID, Query()],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    import_data: dict  # TODO: Define proper schema for bulk import
+) -> dict:
+    """Bulk import contacts."""
+    # This is a placeholder implementation
+    # In a real implementation, you would:
+    # 1. Validate the import data
+    # 2. Check for duplicates
+    # 3. Create contacts in batch
+    # 4. Return results with success/error counts
+    
+    return {
+        "message": "Bulk import endpoint - implementation in progress",
+        "total_processed": 0,
+        "successful_imports": 0,
+        "failed_imports": 0,
+        "errors": []
+    }
+
+
+@router.post("/export")
+async def export_contacts(
+    tenant_id: Annotated[uuid.UUID, Query()],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    export_options: dict  # TODO: Define proper schema for export options
+) -> dict:
+    """Export contacts."""
+    # This is a placeholder implementation
+    # In a real implementation, you would:
+    # 1. Query contacts based on filters
+    # 2. Format data for export (CSV, Excel, etc.)
+    # 3. Generate export file or return data
+    
+    return {
+        "message": "Export endpoint - implementation in progress",
+        "export_format": "csv",
+        "total_contacts": 0,
+        "download_url": None
+    }

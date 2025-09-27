@@ -156,6 +156,113 @@ graph TB
 
 ## Data Models
 
+### Campaign Model
+```typescript
+interface Campaign {
+    id: string;                     // UUID
+    name: string;                   // Campaign name
+    description?: string;           // Campaign description
+    type: CampaignType;            // EMAIL | SMS | WHATSAPP | MULTI_CHANNEL
+    status: CampaignStatus;        // DRAFT | SCHEDULED | RUNNING | PAUSED | COMPLETED | CANCELLED
+    
+    // Email-specific fields
+    subject_line?: string;          // Email subject
+    sender_name?: string;           // Sender display name
+    sender_email?: string;          // Sender email address
+    
+    // Targeting
+    target_segments: string[];      // Contact segment IDs
+    contact_list_ids: string[];     // Contact list IDs
+    
+    // Content
+    template_id?: string;           // Email template ID
+    content?: string;               // Campaign content
+    
+    // Tracking settings
+    tracking_enabled: boolean;      // Overall tracking
+    open_tracking_enabled: boolean; // Email open tracking
+    click_tracking_enabled: boolean; // Link click tracking
+    unsubscribe_enabled: boolean;   // Unsubscribe links
+    
+    // Scheduling
+    scheduled_at?: Date;            // Scheduled send time
+    started_at?: Date;              // Actual start time
+    completed_at?: Date;            // Completion time
+    
+    // Metadata
+    tenant_id: string;              // Tenant isolation
+    created_by: string;             // Creator user ID
+    metadata: any;                  // Additional data
+    created_at: Date;
+    updated_at: Date;
+}
+
+interface CampaignMessage {
+    id: string;                     // UUID
+    campaign_id: string;            // Campaign reference
+    contact_id: string;             // Target contact
+    channel_type: ChannelType;      // Delivery channel
+    
+    // Message content
+    subject?: string;               // Email subject (personalized)
+    content: string;                // Message content
+    html_content?: string;          // HTML version
+    
+    // Delivery tracking
+    status: MessageStatus;          // PENDING | SENT | DELIVERED | FAILED | BOUNCED
+    sent_at?: Date;                 // Send timestamp
+    delivered_at?: Date;            // Delivery confirmation
+    failed_at?: Date;               // Failure timestamp
+    failure_reason?: string;        // Error details
+    
+    // External references
+    external_message_id?: string;   // Provider message ID
+    
+    metadata: any;
+    created_at: Date;
+    updated_at: Date;
+}
+
+interface EmailTrackingEvent {
+    id: string;                     // UUID
+    campaign_id: string;            // Campaign reference
+    message_id: string;             // Message reference
+    recipient_email: string;        // Recipient identifier
+    
+    event_type: TrackingEventType;  // OPEN | CLICK | BOUNCE | UNSUBSCRIBE | COMPLAINT
+    
+    // Event details
+    ip_address?: string;            // Client IP
+    user_agent?: string;            // Client user agent
+    url?: string;                   // Clicked URL (for CLICK events)
+    
+    metadata: any;                  // Additional event data
+    created_at: Date;               // Event timestamp
+}
+
+interface EmailTemplate {
+    id: string;                     // UUID
+    name: string;                   // Template name
+    description?: string;           // Template description
+    subject: string;                // Email subject template
+    
+    // Content
+    html_content: string;           // HTML email content
+    text_content?: string;          // Plain text version
+    variables: string[];            // Available variables
+    
+    // Organization
+    category?: string;              // Template category
+    is_active: boolean;             // Template status
+    
+    // Metadata
+    tenant_id: string;
+    created_by: string;
+    metadata: any;
+    created_at: Date;
+    updated_at: Date;
+}
+
 ### Message Model
 ```typescript
 interface Message {
@@ -262,6 +369,136 @@ interface Channel {
 
 ### REST Endpoints
 ```yaml
+# Campaign Management
+/api/v1/campaigns:
+  post:
+    summary: Create campaign
+    request:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CampaignCreate'
+    response:
+      201:
+        $ref: '#/components/schemas/Campaign'
+
+  get:
+    summary: List campaigns
+    parameters:
+      - name: status
+        in: query
+        type: string
+      - name: campaign_type
+        in: query
+        type: string
+      - name: search
+        in: query
+        type: string
+    response:
+      200:
+        type: object
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/Campaign'
+
+/api/v1/campaigns/{id}:
+  get:
+    summary: Get campaign details
+  put:
+    summary: Update campaign
+  delete:
+    summary: Delete campaign
+
+/api/v1/campaigns/{id}/start:
+  post:
+    summary: Start campaign execution
+
+/api/v1/campaigns/{id}/pause:
+  post:
+    summary: Pause running campaign
+
+/api/v1/campaigns/{id}/stop:
+  post:
+    summary: Stop campaign
+
+/api/v1/campaigns/{id}/stats:
+  get:
+    summary: Get campaign statistics
+    response:
+      200:
+        $ref: '#/components/schemas/CampaignStats'
+
+/api/v1/campaigns/{id}/events:
+  get:
+    summary: Get campaign tracking events
+    parameters:
+      - name: event_type
+        in: query
+        type: string
+    response:
+      200:
+        type: array
+        items:
+          $ref: '#/components/schemas/EmailTrackingEvent'
+
+# Email Template Management
+/api/v1/templates:
+  post:
+    summary: Create email template
+  get:
+    summary: List email templates
+    parameters:
+      - name: category
+        in: query
+        type: string
+      - name: is_active
+        in: query
+        type: boolean
+
+/api/v1/templates/{id}:
+  get:
+    summary: Get template details
+  put:
+    summary: Update template
+  delete:
+    summary: Delete template
+
+# Email Tracking Endpoints
+/api/v1/tracking/open:
+  get:
+    summary: Track email open (pixel endpoint)
+    parameters:
+      - name: message_id
+        in: query
+        type: string
+        required: true
+
+/api/v1/tracking/click:
+  get:
+    summary: Track link click and redirect
+    parameters:
+      - name: message_id
+        in: query
+        type: string
+        required: true
+      - name: url
+        in: query
+        type: string
+        required: true
+
+# Contact Segments
+/api/v1/segments:
+  get:
+    summary: List contact segments
+    response:
+      200:
+        type: array
+        items:
+          $ref: '#/components/schemas/ContactSegment'
+
+# Legacy Message Endpoints
 /api/v1/messages:
   post:
     summary: Send message
@@ -347,7 +584,69 @@ interface WebSocketEvents {
 
 ## Integration Patterns
 
-### 1. Message Flow
+### 1. Campaign Execution Flow
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant API as Campaign API
+    participant CS as Campaign Service
+    participant ES as Email Service
+    participant DB as Database
+    participant EP as Email Provider
+    participant R as Recipient
+
+    U->>API: Start Campaign
+    API->>CS: Execute Campaign
+    CS->>DB: Get Target Contacts
+    DB-->>CS: Contact List
+    
+    loop For Each Contact
+        CS->>ES: Send Email
+        ES->>EP: Deliver Message
+        EP->>R: Email Delivery
+        EP-->>ES: Delivery Status
+        ES->>DB: Store Message Record
+        
+        R->>API: Open Email (Pixel)
+        API->>DB: Record Open Event
+        
+        R->>API: Click Link
+        API->>DB: Record Click Event
+        API-->>R: Redirect to URL
+    end
+    
+    CS->>DB: Update Campaign Status
+    CS-->>API: Campaign Complete
+```
+
+### 2. Real-time Email Tracking
+```mermaid
+sequenceDiagram
+    participant R as Recipient
+    participant CDN as CDN/Proxy
+    participant API as Tracking API
+    participant DB as Database
+    participant WS as WebSocket
+    participant U as User Dashboard
+
+    R->>CDN: Load Email (with tracking pixel)
+    CDN->>API: GET /tracking/open?message_id=xxx
+    API->>DB: Record Open Event
+    API->>WS: Broadcast Event
+    WS->>U: Real-time Update
+    API-->>CDN: Return 1x1 Pixel
+    CDN-->>R: Serve Pixel
+
+    R->>CDN: Click Tracked Link
+    CDN->>API: GET /tracking/click?message_id=xxx&url=yyy
+    API->>DB: Record Click Event
+    API->>WS: Broadcast Event
+    WS->>U: Real-time Update
+    API-->>CDN: 302 Redirect
+    CDN-->>R: Redirect to Target URL
+```
+
+### 3. Message Flow (Legacy)
 ```mermaid
 sequenceDiagram
     participant C as Client

@@ -170,7 +170,7 @@ export default function EmailTemplatesPage() {
                     <div className="bg-gray-50 rounded-md p-3 mb-4">
                       <div className="text-xs font-medium text-gray-500 mb-1">Subject Line</div>
                       <div className="text-sm text-gray-900 truncate">
-                        {template.subject || 'No subject set'}
+                        {template.subject_template || 'No subject set'}
                       </div>
                     </div>
                     
@@ -229,17 +229,29 @@ function CreateTemplateModal({ onClose, onSubmit, isLoading, categories }: Creat
   const [formData, setFormData] = useState<EmailTemplateCreate>({
     name: '',
     description: '',
-    subject: '',
-    html_content: '',
-    text_content: '',
+    subject_template: '',
+    html_template: '',
+    text_template: '',
     category: '',
     variables: [],
-    is_active: true,
+    sample_data: {},
+    tags: [],
+    extra_data: {},
   })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit(formData)
+    
+    // Ensure required fields have defaults
+    const templateData = {
+      ...formData,
+      variables: formData.variables || [],
+      sample_data: formData.sample_data || {},
+      tags: formData.tags || [],
+      extra_data: formData.extra_data || {},
+    }
+    
+    onSubmit(templateData)
   }
 
   const handleInputChange = (field: keyof EmailTemplateCreate, value: any) => {
@@ -304,60 +316,74 @@ function CreateTemplateModal({ onClose, onSubmit, isLoading, categories }: Creat
             </div>
 
             <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-gray-700">
-                Subject Line *
+              <label htmlFor="subject_template" className="block text-sm font-medium text-gray-700">
+                Subject Template *
               </label>
               <input
                 type="text"
-                id="subject"
+                id="subject_template"
                 required
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
-                value={formData.subject}
-                onChange={(e) => handleInputChange('subject', e.target.value)}
-                placeholder="Enter email subject line"
+                value={formData.subject_template}
+                onChange={(e) => handleInputChange('subject_template', e.target.value)}
+                placeholder="Enter email subject template (e.g., Welcome {{first_name}}!)"
               />
             </div>
 
             <div>
-              <label htmlFor="html_content" className="block text-sm font-medium text-gray-700">
-                HTML Content *
+              <label htmlFor="html_template" className="block text-sm font-medium text-gray-700">
+                HTML Template
               </label>
               <textarea
-                id="html_content"
+                id="html_template"
                 rows={8}
-                required
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 font-mono text-sm"
-                value={formData.html_content}
-                onChange={(e) => handleInputChange('html_content', e.target.value)}
-                placeholder="Enter HTML content for the email"
+                value={formData.html_template}
+                onChange={(e) => handleInputChange('html_template', e.target.value)}
+                placeholder="Enter HTML content for the email (e.g., <h1>Hello {{first_name}}!</h1>)"
               />
             </div>
 
             <div>
-              <label htmlFor="text_content" className="block text-sm font-medium text-gray-700">
-                Text Content
+              <label htmlFor="text_template" className="block text-sm font-medium text-gray-700">
+                Text Template
               </label>
               <textarea
-                id="text_content"
+                id="text_template"
                 rows={4}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
-                value={formData.text_content}
-                onChange={(e) => handleInputChange('text_content', e.target.value)}
-                placeholder="Enter plain text version (optional)"
+                value={formData.text_template}
+                onChange={(e) => handleInputChange('text_template', e.target.value)}
+                placeholder="Enter plain text version (e.g., Hello {{first_name}}!)"
               />
             </div>
 
-            <div className="flex items-center">
-              <input
-                id="is_active"
-                type="checkbox"
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-                checked={formData.is_active}
-                onChange={(e) => handleInputChange('is_active', e.target.checked)}
-              />
-              <label htmlFor="is_active" className="ml-2 block text-sm text-gray-900">
-                Template is active
+            <div>
+              <label htmlFor="variables" className="block text-sm font-medium text-gray-700">
+                Variables
               </label>
+              <input
+                type="text"
+                id="variables"
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+                value={formData.variables?.join(', ') || ''}
+                onChange={(e) => handleInputChange('variables', e.target.value.split(',').map(v => v.trim()).filter(v => v))}
+                placeholder="Enter variables separated by commas (e.g., first_name, company_name)"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="tags" className="block text-sm font-medium text-gray-700">
+                Tags
+              </label>
+              <input
+                type="text"
+                id="tags"
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+                value={formData.tags?.join(', ') || ''}
+                onChange={(e) => handleInputChange('tags', e.target.value.split(',').map(v => v.trim()).filter(v => v))}
+                placeholder="Enter tags separated by commas (e.g., welcome, onboarding)"
+              />
             </div>
           </div>
 

@@ -43,7 +43,7 @@ class ContactBase(BaseModel):
     
     tags: Annotated[str, StringConstraints(max_length=500)] | None = None
     
-    preferred_contact_method: Annotated[str, StringConstraints(max_length=20)] = "email"
+    preferred_contact_method: Annotated[str, StringConstraints(max_length=20)] | None = None
     opt_out: bool = False
     
     owner_id: uuid.UUID | None = None

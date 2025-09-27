@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Orchestration Service Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9fafb;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        h1 {
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        
+        h2 {
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 8px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status.success { background: #dcfce7; color: #166534; }
+        .status.error { background: #fee2e2; color: #dc2626; }
+        .status.loading { background: #dbeafe; color: #1d4ed8; }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            background: #f9fafb;
+        }
+        
+        .card h3 {
+            margin-top: 0;
+            color: #1f2937;
+        }
+        
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 4px;
+        }
+        
+        button:hover {
+            background: #2563eb;
+        }
+        
+        .response {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 12px;
+            margin-top: 12px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        
+        .metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .metric {
+            background: #f0f9ff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-align: center;
+            min-width: 80px;
+        }
+        
+        .metric-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .metric-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e5e7eb;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Orchestration Service Integration Test</h1>
+        <p>Testing the complete AI functionality stack for the CRM platform</p>
+        
+        <div class="metrics">
+            <div class="metric">
+                <div class="metric-label">Service</div>
+                <div class="metric-value" id="service-status">🟡</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Models</div>
+                <div class="metric-value" id="models-count">-</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Jobs</div>
+                <div class="metric-value" id="jobs-count">-</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Workflows</div>
+                <div class="metric-value" id="workflows-count">-</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <!-- Models Section -->
+        <div class="container">
+            <h2>🧠 AI Models</h2>
+            <button onclick="testModels()">Load Models</button>
+            <button onclick="createModel()">Create Model</button>
+            <div id="models-response" class="response" style="display: none;"></div>
+        </div>
+
+        <!-- Predictions Section -->
+        <div class="container">
+            <h2>🔮 Predictions</h2>
+            <button onclick="testPredictions()">Load Predictions</button>
+            <button onclick="createPrediction()">Start Batch Job</button>
+            <div id="predictions-response" class="response" style="display: none;"></div>
+        </div>
+
+        <!-- Training Section -->
+        <div class="container">
+            <h2>🎓 Training</h2>
+            <button onclick="testTraining()">Load Training Jobs</button>
+            <button onclick="createTraining()">Start Training</button>
+            <div id="training-response" class="response" style="display: none;"></div>
+        </div>
+
+        <!-- Workflows Section -->
+        <div class="container">
+            <h2>⚙️ Workflows</h2>
+            <button onclick="testWorkflows()">Load Workflows</button>
+            <div id="workflows-response" class="response" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📊 Complete Integration Test</h2>
+        <button onclick="runFullTest()" id="full-test-btn">Run Full Integration Test</button>
+        <div id="full-test-results" class="response" style="display: none;"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8005/api/v1';
+        
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                throw new Error(`Request failed: ${error.message}`);
+            }
+        }
+        
+        function updateDisplay(elementId, data, status = 'success') {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.innerHTML = `<span class="status ${status}">${status.toUpperCase()}</span>\n${JSON.stringify(data, null, 2)}`;
+        }
+        
+        function showLoading(elementId) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.innerHTML = '<span class="loading"></span> Loading...';
+        }
+        
+        async function testModels() {
+            showLoading('models-response');
+            try {
+                const data = await makeRequest(`${API_BASE}/models/`);
+                updateDisplay('models-response', data);
+                document.getElementById('models-count').textContent = data.length;
+            } catch (error) {
+                updateDisplay('models-response', { error: error.message }, 'error');
+            }
+        }
+        
+        async function createModel() {
+            showLoading('models-response');
+            try {
+                const modelData = {
+                    name: "Test Model " + Date.now(),
+                    description: "Test model created from UI",
+                    type: "classification",
+                    framework: "scikit-learn"
+                };
+                const data = await makeRequest(`${API_BASE}/models/`, {
+                    method: 'POST',
+                    body: JSON.stringify(modelData)
+                });
+                updateDisplay('models-response', data);
+            } catch (error) {
+                updateDisplay('models-response', { error: error.message }, 'error');
+            }
+        }
+        
+        async function testPredictions() {
+            showLoading('predictions-response');
+            try {
+                const data = await makeRequest(`${API_BASE}/predictions/`);
+                updateDisplay('predictions-response', data);
+            } catch (error) {
+                updateDisplay('predictions-response', { error: error.message }, 'error');
+            }
+        }
+        
+        async function createPrediction() {
+            showLoading('predictions-response');
+            try {
+                const predictionData = {
+                    model_id: "test-model-id",
+                    data_source: "test-data",
+                    items: [
+                        { id: "test1", engagement_score: 0.8, profile_score: 0.7 },
+                        { id: "test2", engagement_score: 0.6, profile_score: 0.9 }
+                    ]
+                };
+                const data = await makeRequest(`${API_BASE}/predictions/batch`, {
+                    method: 'POST',
+                    body: JSON.stringify(predictionData)
+                });
+                updateDisplay('predictions-response', data);
+            } catch (error) {
+                updateDisplay('predictions-response', { error: error.message }, 'error');
+            }
+        }
+        
+        async function testTraining() {
+            showLoading('training-response');
+            try {
+                const data = await makeRequest(`${API_BASE}/training/jobs`);
+                updateDisplay('training-response', data);
+                document.getElementById('jobs-count').textContent = data.length;
+            } catch (error) {
+                updateDisplay('training-response', { error: error.message }, 'error');
+            }
+        }
+        
+        async function createTraining() {
+            showLoading('training-response');
+            try {
+                const trainingData = {
+                    model_name: "Test Training Job " + Date.now(),
+                    algorithm: "random_forest",
+                    hyperparameters: { n_estimators: 100, max_depth: 10 },
+                    training_data: {
+                        source: "database",
+                        target_column: "conversion"
+                    },
+                    validation: {
+                        method: "holdout",
+                        test_size: 0.2
+                    }
+                };
+                const data = await makeRequest(`${API_BASE}/training/jobs`, {
+                    method: 'POST',
+                    body: JSON.stringify(trainingData)
+                });
+                updateDisplay('training-response', data);
+            } catch (error) {
+                updateDisplay('training-response', { error: error.message }, 'error');
+            }
+        }
+        
+        async function testWorkflows() {
+            showLoading('workflows-response');
+            try {
+                const data = await makeRequest(`${API_BASE}/workflows/`);
+                updateDisplay('workflows-response', data);
+                document.getElementById('workflows-count').textContent = data.length;
+            } catch (error) {
+                updateDisplay('workflows-response', { error: error.message }, 'error');
+            }
+        }
+        
+        async function runFullTest() {
+            const btn = document.getElementById('full-test-btn');
+            const results = document.getElementById('full-test-results');
+            
+            btn.disabled = true;
+            btn.textContent = 'Running Tests...';
+            results.style.display = 'block';
+            results.innerHTML = '<span class="loading"></span> Running comprehensive integration test...';
+            
+            const testResults = {
+                timestamp: new Date().toISOString(),
+                tests: []
+            };
+            
+            // Test each endpoint
+            const tests = [
+                { name: 'Models API', fn: () => makeRequest(`${API_BASE}/models/`) },
+                { name: 'Predictions API', fn: () => makeRequest(`${API_BASE}/predictions/`) },
+                { name: 'Training API', fn: () => makeRequest(`${API_BASE}/training/jobs`) },
+                { name: 'Workflows API', fn: () => makeRequest(`${API_BASE}/workflows/`) },
+            ];
+            
+            for (const test of tests) {
+                try {
+                    const startTime = Date.now();
+                    const result = await test.fn();
+                    const duration = Date.now() - startTime;
+                    
+                    testResults.tests.push({
+                        name: test.name,
+                        status: 'PASSED',
+                        duration: `${duration}ms`,
+                        result: result
+                    });
+                } catch (error) {
+                    testResults.tests.push({
+                        name: test.name,
+                        status: 'FAILED',
+                        error: error.message
+                    });
+                }
+            }
+            
+            // Update status indicators
+            const passedTests = testResults.tests.filter(t => t.status === 'PASSED').length;
+            const totalTests = testResults.tests.length;
+            
+            if (passedTests === totalTests) {
+                document.getElementById('service-status').textContent = '🟢';
+                testResults.summary = `All ${totalTests} tests passed`;
+            } else {
+                document.getElementById('service-status').textContent = '🔴';
+                testResults.summary = `${passedTests}/${totalTests} tests passed`;
+            }
+            
+            updateDisplay('full-test-results', testResults, passedTests === totalTests ? 'success' : 'error');
+            
+            btn.disabled = false;
+            btn.textContent = 'Run Full Integration Test';
+        }
+        
+        // Auto-run basic tests on page load
+        window.addEventListener('load', () => {
+            setTimeout(runFullTest, 1000);
+        });
+    </script>
+</body>
+</html>

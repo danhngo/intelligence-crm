@@ -6,7 +6,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from sqlalchemy import JSON, Boolean, Enum as SQLEnum, Float, ForeignKey, Integer, String
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin, UUIDMixin
@@ -78,12 +78,12 @@ class Message(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "messages"
 
-    conversation_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("conversations.id", ondelete="CASCADE"),
+    conversation_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True),
         index=True
     )
-    channel_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("channels.id", ondelete="CASCADE"),
+    channel_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True),
         index=True
     )
     type: Mapped[MessageType] = mapped_column(SQLEnum(MessageType))
@@ -104,10 +104,10 @@ class Message(Base, UUIDMixin, TimestampMixin):
     intent_name: Mapped[Optional[str]] = mapped_column(String(100))
     intent_confidence: Mapped[Optional[float]] = mapped_column(Float)
     intent_entities: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSON)
-    metadata: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)
+    extra_data: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)
 
-    # Relationships
-    conversation: Mapped["Conversation"] = relationship(back_populates="messages")
+    # Relationships - disabled temporarily
+    # conversation: Mapped["Conversation"] = relationship(back_populates="messages")
 
 
 class Conversation(Base, UUIDMixin, TimestampMixin):
@@ -115,13 +115,13 @@ class Conversation(Base, UUIDMixin, TimestampMixin):
 
     __tablename__ = "conversations"
 
-    channel_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("channels.id", ondelete="CASCADE"),
+    channel_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True),
         index=True
     )
     participants: Mapped[List[str]] = mapped_column(ARRAY(String))
     status: Mapped[ConversationStatus] = mapped_column(SQLEnum(ConversationStatus))
-    metadata: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)
+    extra_data: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)
     message_count: Mapped[int] = mapped_column(Integer, default=0)
     avg_response_time: Mapped[Optional[float]] = mapped_column(Float)
     resolution_status: Mapped[Optional[ResolutionStatus]] = mapped_column(
@@ -129,8 +129,8 @@ class Conversation(Base, UUIDMixin, TimestampMixin):
     )
     resolution_time: Mapped[Optional[float]] = mapped_column(Float)
 
-    # Relationships
-    messages: Mapped[List[Message]] = relationship(
-        back_populates="conversation",
-        cascade="all, delete-orphan"
-    )
+    # Relationships - disabled temporarily
+    # messages: Mapped[List[Message]] = relationship(
+    #     back_populates="conversation",
+    #     cascade="all, delete-orphan"
+    # )

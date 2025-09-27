@@ -10,6 +10,12 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from app.models.base import Base
+# Import all models to ensure they are registered with SQLAlchemy
+from app.models.contact import Contact
+from app.models.company import Company
+from app.models.lead import Lead
+from app.models.deal import Deal
+from app.models.activity import Activity
 
 # Load Alembic configuration
 config = context.config

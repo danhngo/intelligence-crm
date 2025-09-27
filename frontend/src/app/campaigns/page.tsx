@@ -24,19 +24,19 @@ import {
 import Link from 'next/link'
 
 const statusColors = {
-  DRAFT: 'bg-gray-100 text-gray-800',
-  SCHEDULED: 'bg-blue-100 text-blue-800',
-  RUNNING: 'bg-green-100 text-green-800',
-  PAUSED: 'bg-yellow-100 text-yellow-800',
-  COMPLETED: 'bg-purple-100 text-purple-800',
-  CANCELLED: 'bg-red-100 text-red-800',
+  draft: 'bg-gray-100 text-gray-800',
+  scheduled: 'bg-blue-100 text-blue-800',
+  running: 'bg-green-100 text-green-800',
+  paused: 'bg-yellow-100 text-yellow-800',
+  completed: 'bg-purple-100 text-purple-800',
+  cancelled: 'bg-red-100 text-red-800',
 }
 
 const typeColors = {
-  EMAIL: 'bg-blue-50 text-blue-700',
-  SMS: 'bg-green-50 text-green-700',
-  WHATSAPP: 'bg-emerald-50 text-emerald-700',
-  MULTI_CHANNEL: 'bg-purple-50 text-purple-700',
+  email: 'bg-blue-50 text-blue-700',
+  sms: 'bg-green-50 text-green-700',
+  whatsapp: 'bg-emerald-50 text-emerald-700',
+  multi_channel: 'bg-purple-50 text-purple-700',
 }
 
 export default function CampaignsPage() {
@@ -107,8 +107,8 @@ export default function CampaignsPage() {
 
   const getActionButton = (campaign: Campaign) => {
     switch (campaign.status) {
-      case 'DRAFT':
-      case 'PAUSED':
+      case 'draft':
+      case 'paused':
         return (
           <button
             onClick={() => handleStart(campaign.id)}
@@ -118,7 +118,7 @@ export default function CampaignsPage() {
             <PlayIcon className="h-4 w-4" />
           </button>
         )
-      case 'RUNNING':
+      case 'running':
         return (
           <div className="flex space-x-1">
             <button
@@ -186,12 +186,12 @@ export default function CampaignsPage() {
               className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="">All Statuses</option>
-              <option value="DRAFT">Draft</option>
-              <option value="SCHEDULED">Scheduled</option>
-              <option value="RUNNING">Running</option>
-              <option value="PAUSED">Paused</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="CANCELLED">Cancelled</option>
+              <option value="draft">Draft</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="running">Running</option>
+              <option value="paused">Paused</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
             </select>
 
             {/* Type Filter */}
@@ -201,10 +201,10 @@ export default function CampaignsPage() {
               className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="">All Types</option>
-              <option value="EMAIL">Email</option>
-              <option value="SMS">SMS</option>
-              <option value="WHATSAPP">WhatsApp</option>
-              <option value="MULTI_CHANNEL">Multi-Channel</option>
+              <option value="email">Email</option>
+              <option value="sms">SMS</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="multi_channel">Multi-Channel</option>
             </select>
           </div>
 

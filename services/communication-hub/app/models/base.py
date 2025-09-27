@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Any
 
 from sqlalchemy import DateTime, MetaData, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -42,7 +43,7 @@ class UUIDMixin:
     """Mixin for UUID primary key."""
     
     id: Mapped[uuid.UUID] = mapped_column(
-        String(36),
+        UUID(as_uuid=True),
         primary_key=True,
         default=uuid.uuid4
     )

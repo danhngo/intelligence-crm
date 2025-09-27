@@ -1,0 +1,622 @@
+{
+  "info": {
+    "name": "Communication Hub API",
+    "description": "Intelligent communication orchestration and routing service",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "test-auth-token-123",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8003",
+      "type": "string"
+    },
+    {
+      "key": "apiVersion",
+      "value": "v1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Info",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Service Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Campaigns",
+      "item": [
+        {
+          "name": "List Campaigns",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/campaigns/?skip=0&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "campaigns", ""],
+              "query": [
+                {
+                  "key": "skip",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "status",
+                  "value": "draft",
+                  "disabled": true
+                },
+                {
+                  "key": "campaign_type",
+                  "value": "email",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Campaign",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Welcome Campaign\",\n  \"description\": \"Welcome new users to our platform\",\n  \"type\": \"email\",\n  \"target_segments\": [\"new_users\", \"trial_users\"],\n  \"contact_list_ids\": [\"list1\", \"list2\"],\n  \"template_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"subject_line\": \"Welcome to our platform!\",\n  \"sender_name\": \"Welcome Team\",\n  \"sender_email\": \"welcome@example.com\",\n  \"tracking_enabled\": true,\n  \"click_tracking_enabled\": true,\n  \"open_tracking_enabled\": true,\n  \"unsubscribe_enabled\": true,\n  \"config\": {\n    \"send_time\": \"09:00\",\n    \"timezone\": \"UTC\"\n  },\n  \"extra_data\": {\n    \"source\": \"api\",\n    \"created_by_user\": \"admin\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/campaigns/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "campaigns", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Campaign",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/campaigns/{{campaign_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "campaigns", "{{campaign_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Campaign",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Campaign Name\",\n  \"description\": \"Updated description\",\n  \"status\": \"scheduled\",\n  \"scheduled_at\": \"2025-12-01T10:00:00Z\",\n  \"extra_data\": {\n    \"updated_by\": \"admin\",\n    \"update_reason\": \"content_improvements\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/campaigns/{{campaign_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "campaigns", "{{campaign_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Campaign",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/campaigns/{{campaign_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "campaigns", "{{campaign_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Start Campaign",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/campaigns/{{campaign_id}}/start",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "campaigns", "{{campaign_id}}", "start"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pause Campaign",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/campaigns/{{campaign_id}}/pause",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "campaigns", "{{campaign_id}}", "pause"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Stop Campaign",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/campaigns/{{campaign_id}}/stop",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "campaigns", "{{campaign_id}}", "stop"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Campaign Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/campaigns/{{campaign_id}}/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "campaigns", "{{campaign_id}}", "stats"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Campaign Events",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/campaigns/{{campaign_id}}/events?skip=0&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "campaigns", "{{campaign_id}}", "events"],
+              "query": [
+                {
+                  "key": "skip",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "event_type",
+                  "value": "opened",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Email Templates",
+      "item": [
+        {
+          "name": "List Templates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/templates/?skip=0&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "templates", ""],
+              "query": [
+                {
+                  "key": "skip",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "category",
+                  "value": "marketing",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "is_active",
+                  "value": "true",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Template",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Welcome Email Template\",\n  \"description\": \"Email template for welcoming new users\",\n  \"subject_template\": \"Welcome to {{company_name}}, {{first_name}}!\",\n  \"html_template\": \"<h1>Welcome {{first_name}}!</h1><p>Thank you for joining {{company_name}}. We're excited to have you on board!</p><p>Get started by <a href='{{dashboard_url}}'>visiting your dashboard</a>.</p>\",\n  \"text_template\": \"Welcome {{first_name}}! Thank you for joining {{company_name}}. Visit your dashboard at {{dashboard_url}} to get started.\",\n  \"variables\": [\"first_name\", \"company_name\", \"dashboard_url\"],\n  \"sample_data\": {\n    \"first_name\": \"John\",\n    \"company_name\": \"Example Corp\",\n    \"dashboard_url\": \"https://app.example.com/dashboard\"\n  },\n  \"category\": \"onboarding\",\n  \"tags\": [\"welcome\", \"onboarding\", \"new-user\"],\n  \"extra_data\": {\n    \"design_version\": \"v2\",\n    \"brand_colors\": [\"#007bff\", \"#6c757d\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/templates/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "templates", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Template",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/templates/{{template_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "templates", "{{template_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Template",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Welcome Template\",\n  \"description\": \"Updated welcome email template with better design\",\n  \"is_active\": true,\n  \"extra_data\": {\n    \"last_updated_by\": \"admin\",\n    \"update_reason\": \"improved_design\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/templates/{{template_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "templates", "{{template_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Template",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/templates/{{template_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "templates", "{{template_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Preview Template",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Jane\",\n  \"company_name\": \"Demo Company\",\n  \"dashboard_url\": \"https://demo.example.com/dashboard\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/templates/{{template_id}}/preview",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "templates", "{{template_id}}", "preview"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Duplicate Template",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/templates/{{template_id}}/duplicate?name=Copy of Welcome Template",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "templates", "{{template_id}}", "duplicate"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "Copy of Welcome Template"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "List Messages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/messages/?skip=0&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "messages", ""],
+              "query": [
+                {
+                  "key": "skip",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"channel\": \"email\",\n  \"to\": \"user@example.com\",\n  \"subject\": \"Test Message\",\n  \"content\": \"This is a test message sent via API\",\n  \"template_id\": \"{{template_id}}\",\n  \"personalization_data\": {\n    \"first_name\": \"John\",\n    \"company_name\": \"Example Corp\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/messages/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "messages", ""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Channels",
+      "item": [
+        {
+          "name": "List Channels",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/channels/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "channels", ""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Communications",
+      "item": [
+        {
+          "name": "List Communications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/communications/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "communications", ""]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

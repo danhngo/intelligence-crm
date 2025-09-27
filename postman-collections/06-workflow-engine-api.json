@@ -1,0 +1,462 @@
+{
+  "info": {
+    "name": "Workflow Engine API",
+    "description": "Business process automation and workflow management service",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "test-auth-token-123",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8001",
+      "type": "string"
+    },
+    {
+      "key": "apiVersion",
+      "value": "v1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Info",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Service Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Workflows",
+      "item": [
+        {
+          "name": "List Workflows",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows?skip=0&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows"],
+              "query": [
+                {
+                  "key": "skip",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "email_automation",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Workflow",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Welcome Email Sequence\",\n  \"description\": \"Automated welcome email sequence for new contacts\",\n  \"category\": \"email_automation\",\n  \"trigger\": {\n    \"type\": \"contact_created\",\n    \"conditions\": {\n      \"status\": \"active\",\n      \"has_email\": true\n    }\n  },\n  \"steps\": [\n    {\n      \"id\": \"wait_1hour\",\n      \"type\": \"delay\",\n      \"config\": {\n        \"duration\": \"1h\"\n      }\n    },\n    {\n      \"id\": \"send_welcome_email\",\n      \"type\": \"send_email\",\n      \"config\": {\n        \"template_id\": \"welcome_template_1\",\n        \"from_email\": \"welcome@example.com\",\n        \"from_name\": \"Welcome Team\",\n        \"personalization\": {\n          \"first_name\": \"{{contact.first_name}}\",\n          \"company\": \"{{contact.company}}\"\n        }\n      }\n    },\n    {\n      \"id\": \"wait_3days\",\n      \"type\": \"delay\",\n      \"config\": {\n        \"duration\": \"3d\"\n      }\n    },\n    {\n      \"id\": \"send_followup_email\",\n      \"type\": \"send_email\",\n      \"config\": {\n        \"template_id\": \"followup_template_1\",\n        \"from_email\": \"support@example.com\",\n        \"from_name\": \"Support Team\",\n        \"conditions\": {\n          \"email_opened\": false\n        }\n      }\n    }\n  ],\n  \"settings\": {\n    \"active\": true,\n    \"max_executions\": null,\n    \"timeout\": \"7d\",\n    \"retry_failed\": true\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Workflow",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Workflow",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Welcome Email Sequence\",\n  \"description\": \"Enhanced welcome sequence with better timing\",\n  \"settings\": {\n    \"active\": true,\n    \"timeout\": \"14d\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Workflow",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Activate Workflow",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}/activate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}", "activate"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Workflow",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}/deactivate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}", "deactivate"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Test Workflow",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"test_data\": {\n    \"contact\": {\n      \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"first_name\": \"Test\",\n      \"last_name\": \"User\",\n      \"email\": \"test@example.com\",\n      \"company\": \"Test Company\"\n    }\n  },\n  \"dry_run\": true,\n  \"skip_delays\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}/test",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}", "test"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Trigger Workflow",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contact_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"trigger_data\": {\n    \"event\": \"contact_created\",\n    \"timestamp\": \"2024-11-25T10:00:00Z\",\n    \"source\": \"web_form\"\n  },\n  \"override_conditions\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}/trigger",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}", "trigger"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Workflow Executions",
+      "item": [
+        {
+          "name": "List Executions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}/executions?skip=0&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}", "executions"],
+              "query": [
+                {
+                  "key": "skip",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "status",
+                  "value": "running",
+                  "disabled": true
+                },
+                {
+                  "key": "start_date",
+                  "value": "2024-11-01",
+                  "disabled": true
+                },
+                {
+                  "key": "end_date",
+                  "value": "2024-11-30",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Execution",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}/executions/{{execution_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}", "executions", "{{execution_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Stop Execution",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}/executions/{{execution_id}}/stop",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}", "executions", "{{execution_id}}", "stop"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Retry Execution",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}/executions/{{execution_id}}/retry",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}", "executions", "{{execution_id}}", "retry"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Workflow Statistics",
+      "item": [
+        {
+          "name": "Get Workflow Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/{{workflow_id}}/stats?period=30d",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "{{workflow_id}}", "stats"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "30d",
+                  "description": "Stats period: 7d, 30d, 90d"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Workflows Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/workflows/stats?period=30d",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "workflows", "stats"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "30d"
+                },
+                {
+                  "key": "category",
+                  "value": "email_automation",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

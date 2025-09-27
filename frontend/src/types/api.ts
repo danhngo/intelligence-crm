@@ -63,8 +63,8 @@ export interface ContactCreate {
 }
 
 // Campaign types
-export type CampaignType = 'EMAIL' | 'SMS' | 'WHATSAPP' | 'MULTI_CHANNEL';
-export type CampaignStatus = 'DRAFT' | 'SCHEDULED' | 'RUNNING' | 'PAUSED' | 'COMPLETED' | 'CANCELLED';
+export type CampaignType = 'email' | 'sms' | 'whatsapp' | 'multi_channel';
+export type CampaignStatus = 'draft' | 'scheduled' | 'running' | 'paused' | 'completed' | 'cancelled';
 export type EmailEventType = 'SENT' | 'DELIVERED' | 'OPENED' | 'CLICKED' | 'BOUNCED' | 'COMPLAINED' | 'UNSUBSCRIBED';
 
 export interface Campaign {
@@ -97,7 +97,7 @@ export interface Campaign {
   complained_count: number;
   unsubscribed_count: number;
   config: Record<string, any>;
-  metadata: Record<string, any>;
+  extra_data: Record<string, any>;
   created_at: string;
   updated_at: string;
 }
@@ -118,7 +118,7 @@ export interface CampaignCreate {
   open_tracking_enabled?: boolean;
   unsubscribe_enabled?: boolean;
   config?: Record<string, any>;
-  metadata?: Record<string, any>;
+  extra_data?: Record<string, any>;
 }
 
 export interface CampaignUpdate {
@@ -137,7 +137,7 @@ export interface CampaignUpdate {
   open_tracking_enabled?: boolean;
   unsubscribe_enabled?: boolean;
   config?: Record<string, any>;
-  metadata?: Record<string, any>;
+  extra_data?: Record<string, any>;
 }
 
 export interface CampaignStats {
@@ -170,15 +170,19 @@ export interface EmailTemplate {
   id: string;
   name: string;
   description?: string;
-  subject: string;
-  html_content: string;
-  text_content?: string;
+  subject_template: string;
+  html_template?: string;
+  text_template?: string;
   variables: string[];
+  sample_data: Record<string, any>;
   category?: string;
+  tags: string[];
   is_active: boolean;
+  usage_count: number;
+  last_used_at?: string;
   tenant_id: string;
   created_by: string;
-  metadata?: Record<string, any>;
+  extra_data: Record<string, any>;
   created_at: string;
   updated_at: string;
 }
@@ -186,13 +190,14 @@ export interface EmailTemplate {
 export interface EmailTemplateCreate {
   name: string;
   description?: string;
-  subject: string;
-  html_content: string;
-  text_content?: string;
+  subject_template: string;
+  html_template?: string;
+  text_template?: string;
   variables?: string[];
+  sample_data?: Record<string, any>;
   category?: string;
-  is_active?: boolean;
-  metadata?: Record<string, any>;
+  tags?: string[];
+  extra_data?: Record<string, any>;
 }
 
 export interface ContactSegment {
