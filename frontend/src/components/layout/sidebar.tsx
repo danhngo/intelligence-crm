@@ -10,12 +10,16 @@ import {
   ArrowRightOnRectangleIcon,
   UserCircleIcon,
   HeartIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  MegaphoneIcon,
+  EnvelopeIcon
 } from '@heroicons/react/24/outline'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
   { name: 'Contacts', href: '/contacts', icon: UsersIcon },
+  { name: 'Campaigns', href: '/campaigns', icon: MegaphoneIcon },
+  { name: 'Templates', href: '/templates', icon: EnvelopeIcon },
   { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
   { name: 'Messages', href: '/messages', icon: ChatBubbleLeftRightIcon },
   { name: 'Workflows', href: '/workflows', icon: Cog6ToothIcon },

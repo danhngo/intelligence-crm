@@ -36,7 +36,7 @@ export default function ContactsPage() {
     contact.first_name.toLowerCase().includes(search.toLowerCase()) ||
     contact.last_name.toLowerCase().includes(search.toLowerCase()) ||
     contact.email.toLowerCase().includes(search.toLowerCase()) ||
-    contact.company?.toLowerCase().includes(search.toLowerCase())
+    contact.organization?.toLowerCase().includes(search.toLowerCase())
   )
 
   return (
@@ -113,17 +113,19 @@ export default function ContactsPage() {
                               {contact.first_name} {contact.last_name}
                             </h3>
                             <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              contact.status === 'active' ? 'bg-green-100 text-green-800' :
-                              contact.status === 'prospect' ? 'bg-blue-100 text-blue-800' :
+                              contact.lead_status === 'customer' ? 'bg-green-100 text-green-800' :
+                              contact.lead_status === 'qualified' ? 'bg-emerald-100 text-emerald-800' :
+                              contact.lead_status === 'prospect' ? 'bg-blue-100 text-blue-800' :
+                              contact.lead_status === 'inactive' ? 'bg-red-100 text-red-800' :
                               'bg-gray-100 text-gray-800'
                             }`}>
-                              {contact.status}
+                              {contact.lead_status}
                             </span>
                           </div>
                           <div className="mt-1">
                             <p className="text-sm text-gray-600">{contact.email}</p>
-                            {contact.company && (
-                              <p className="text-sm text-gray-500">{contact.company}</p>
+                            {contact.organization && (
+                              <p className="text-sm text-gray-500">{contact.organization}</p>
                             )}
                           </div>
                         </div>

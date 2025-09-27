@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { useDashboardMetrics } from '@/hooks/api'
+import { useCampaigns } from '@/hooks/campaigns'
 import Sidebar from '@/components/layout/sidebar'
 import { 
   ChartBarIcon, 
@@ -9,7 +10,9 @@ import {
   ChatBubbleLeftRightIcon, 
   ClockIcon,
   StarIcon,
-  ArrowTrendingUpIcon 
+  ArrowTrendingUpIcon,
+  MegaphoneIcon,
+  EnvelopeIcon 
 } from '@heroicons/react/24/outline'
 
 interface MetricCardProps {
@@ -51,6 +54,7 @@ function MetricCard({ title, value, icon: Icon, trend, color = 'blue' }: MetricC
 export default function Dashboard() {
   const { isAuthenticated, isLoading } = useAuth()
   const { data: metrics, isLoading: metricsLoading } = useDashboardMetrics()
+  const { data: campaigns = [] } = useCampaigns({ limit: 5 })
 
   if (isLoading) {
     return (
@@ -139,6 +143,18 @@ export default function Dashboard() {
                 icon={ArrowTrendingUpIcon}
                 color="indigo"
               />
+              <MetricCard
+                title="Total Campaigns"
+                value={campaigns.length.toLocaleString()}
+                icon={MegaphoneIcon}
+                color="orange"
+              />
+              <MetricCard
+                title="Active Campaigns"
+                value={campaigns.filter(c => c.status === 'RUNNING').length.toLocaleString()}
+                icon={MegaphoneIcon}
+                color="green"
+              />
             </div>
           ) : (
             <div className="text-center py-12">
@@ -154,7 +170,7 @@ export default function Dashboard() {
               <h3 className="text-lg font-medium text-gray-900">Quick Actions</h3>
             </div>
             <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <a
                   href="/contacts/new"
                   className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
@@ -164,12 +180,20 @@ export default function Dashboard() {
                   <p className="text-sm text-gray-600">Create a new customer contact</p>
                 </a>
                 <a
-                  href="/workflows"
+                  href="/campaigns/new"
+                  className="block p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
+                >
+                  <MegaphoneIcon className="h-8 w-8 text-orange-600 mb-2" />
+                  <h4 className="font-medium text-gray-900">Create Campaign</h4>
+                  <p className="text-sm text-gray-600">Launch a new marketing campaign</p>
+                </a>
+                <a
+                  href="/templates"
                   className="block p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
                 >
-                  <ChartBarIcon className="h-8 w-8 text-green-600 mb-2" />
-                  <h4 className="font-medium text-gray-900">Create Workflow</h4>
-                  <p className="text-sm text-gray-600">Automate your processes</p>
+                  <EnvelopeIcon className="h-8 w-8 text-green-600 mb-2" />
+                  <h4 className="font-medium text-gray-900">Email Templates</h4>
+                  <p className="text-sm text-gray-600">Manage email templates</p>
                 </a>
                 <a
                   href="/analytics"

@@ -31,21 +31,22 @@ export interface UserUpdate {
   is_active?: boolean;
 }
 
-// Contact Types
+// Contact types
 export interface Contact {
   id: string;
   first_name: string;
   last_name: string;
   email: string;
   phone?: string;
-  company?: string;
-  position?: string;
-  status: 'active' | 'inactive' | 'prospect';
-  tags?: string[];
+  organization?: string;
+  title?: string;
+  lead_status: 'prospect' | 'qualified' | 'customer' | 'inactive';
+  preferred_contact_method?: 'email' | 'phone' | 'sms';
+  tags: string[];
   notes?: string;
+  last_contacted?: string;
   created_at: string;
   updated_at: string;
-  owner_id?: string;
 }
 
 export interface ContactCreate {
@@ -53,11 +54,161 @@ export interface ContactCreate {
   last_name: string;
   email: string;
   phone?: string;
-  company?: string;
-  position?: string;
-  status?: 'active' | 'inactive' | 'prospect';
+  organization?: string;
+  title?: string;
+  lead_status?: 'prospect' | 'qualified' | 'customer' | 'inactive';
+  preferred_contact_method?: 'email' | 'phone' | 'sms';
   tags?: string[];
   notes?: string;
+}
+
+// Campaign types
+export type CampaignType = 'EMAIL' | 'SMS' | 'WHATSAPP' | 'MULTI_CHANNEL';
+export type CampaignStatus = 'DRAFT' | 'SCHEDULED' | 'RUNNING' | 'PAUSED' | 'COMPLETED' | 'CANCELLED';
+export type EmailEventType = 'SENT' | 'DELIVERED' | 'OPENED' | 'CLICKED' | 'BOUNCED' | 'COMPLAINED' | 'UNSUBSCRIBED';
+
+export interface Campaign {
+  id: string;
+  name: string;
+  description?: string;
+  type: CampaignType;
+  status: CampaignStatus;
+  tenant_id: string;
+  created_by: string;
+  scheduled_at?: string;
+  started_at?: string;
+  completed_at?: string;
+  target_segments: string[];
+  contact_list_ids: string[];
+  template_id?: string;
+  subject_line?: string;
+  sender_name?: string;
+  sender_email?: string;
+  tracking_enabled: boolean;
+  click_tracking_enabled: boolean;
+  open_tracking_enabled: boolean;
+  unsubscribe_enabled: boolean;
+  total_recipients: number;
+  sent_count: number;
+  delivered_count: number;
+  opened_count: number;
+  clicked_count: number;
+  bounced_count: number;
+  complained_count: number;
+  unsubscribed_count: number;
+  config: Record<string, any>;
+  metadata: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CampaignCreate {
+  name: string;
+  description?: string;
+  type: CampaignType;
+  scheduled_at?: string;
+  target_segments?: string[];
+  contact_list_ids?: string[];
+  template_id?: string;
+  subject_line?: string;
+  sender_name?: string;
+  sender_email?: string;
+  tracking_enabled?: boolean;
+  click_tracking_enabled?: boolean;
+  open_tracking_enabled?: boolean;
+  unsubscribe_enabled?: boolean;
+  config?: Record<string, any>;
+  metadata?: Record<string, any>;
+}
+
+export interface CampaignUpdate {
+  name?: string;
+  description?: string;
+  status?: CampaignStatus;
+  scheduled_at?: string;
+  target_segments?: string[];
+  contact_list_ids?: string[];
+  template_id?: string;
+  subject_line?: string;
+  sender_name?: string;
+  sender_email?: string;
+  tracking_enabled?: boolean;
+  click_tracking_enabled?: boolean;
+  open_tracking_enabled?: boolean;
+  unsubscribe_enabled?: boolean;
+  config?: Record<string, any>;
+  metadata?: Record<string, any>;
+}
+
+export interface CampaignStats {
+  campaign_id: string;
+  sent_count: number;
+  delivered_count: number;
+  unique_opens_count: number;
+  total_opens_count: number;
+  unique_clicks_count: number;
+  total_clicks_count: number;
+  bounce_count: number;
+  unsubscribe_count: number;
+  complaint_count: number;
+}
+
+export interface EmailTrackingEvent {
+  id: string;
+  campaign_id: string;
+  message_id: string;
+  recipient_email: string;
+  event_type: 'SENT' | 'DELIVERED' | 'OPEN' | 'CLICK' | 'BOUNCE' | 'UNSUBSCRIBE' | 'COMPLAINT';
+  created_at: string;
+  ip_address?: string;
+  user_agent?: string;
+  url?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface EmailTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  subject: string;
+  html_content: string;
+  text_content?: string;
+  variables: string[];
+  category?: string;
+  is_active: boolean;
+  tenant_id: string;
+  created_by: string;
+  metadata?: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EmailTemplateCreate {
+  name: string;
+  description?: string;
+  subject: string;
+  html_content: string;
+  text_content?: string;
+  variables?: string[];
+  category?: string;
+  is_active?: boolean;
+  metadata?: Record<string, any>;
+}
+
+export interface ContactSegment {
+  id: string;
+  name: string;
+  description?: string;
+  tenant_id: string;
+  created_by: string;
+  criteria: Record<string, any>;
+  contact_count: number;
+  last_calculated_at?: string;
+  is_dynamic: boolean;
+  is_active: boolean;
+  metadata: Record<string, any>;
+  created_at: string;
+  updated_at: string;
 }
 
 // Analytics Types
